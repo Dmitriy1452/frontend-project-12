@@ -4,6 +4,8 @@
   "description": "[![Actions Status](https://github.com/Dmitriy1452/frontend-project-12/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Dmitriy1452/frontend-project-12/actions)",
   "main": "index.js",
   "scripts": {
+    "start": "start-server -s ./frontend/dist",
+    "build": "npm run build --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/Dmitriy1452/frontend-project-12/issues"
   },
-  "homepage": "https://github.com/Dmitriy1452/frontend-project-12#readme"
+  "homepage": "https://github.com/Dmitriy1452/frontend-project-12#readme",
+  "dependencies": {
+    "@hexlet/chat-server": "^2.0.4"
+  }
 }
