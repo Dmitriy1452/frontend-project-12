@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { loginUser } from '../../api/authApi';
+import { authAPI } from '../../api';
 
 export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await loginUser(credentials);
+      const response = await authAPI.login(credentials);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Ошибка авторизации');
@@ -25,6 +25,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState: {
     token: localStorage.getItem('token') || null,
+    username: localStorage.getItem('username') || null,
     isLoading: false,
     error: null,
     isAuthenticated: !!localStorage.getItem('token'),
@@ -32,8 +33,10 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.token = null;
+      state.username = null;
       state.isAuthenticated = false;
       localStorage.removeItem('token');
+      localStorage.removeItem('username');
     },
     clearError: (state) => {
       state.error = null;
@@ -48,9 +51,11 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.token = action.payload.token;
+        state.username = action.payload.username;
         state.isAuthenticated = true;
         state.error = null;
         localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('username', action.payload.username);
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
