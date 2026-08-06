@@ -1,0 +1,100 @@
+import React from 'react';
+import { useFormik } from 'formik';
+import { Link } from 'react-router-dom';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+
+const Login = () => {
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
+    },
+    validate: (values) => {
+      const errors = {};
+      
+      if (!values.username) {
+        errors.username = 'Имя пользователя обязательно';
+      } else if (values.username.length < 3) {
+        errors.username = 'Имя должно содержать минимум 3 символа';
+      }
+
+      if (!values.password) {
+        errors.password = 'Пароль обязателен';
+      } else if (values.password.length < 6) {
+        errors.password = 'Пароль должен содержать минимум 6 символов';
+      }
+
+      return errors;
+    },
+    onSubmit: (values) => {
+      console.log('Данные формы:', values);
+      alert('Форма отправлена! (Отправка ещё не реализована)');
+    },
+  });
+
+  return (
+    <Container className="d-flex justify-content-center align-items-center min-vh-100">
+      <Row className="w-100">
+        <Col xs={12} sm={10} md={8} lg={6} className="mx-auto">
+          <div className="auth-card">
+            <h1 className="auth-title display-6">Hexlet Chat</h1>
+            
+            <Form onSubmit={formik.handleSubmit}>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-semibold">Имя пользователя</Form.Label>
+                <Form.Control
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Введите имя пользователя"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.username}
+                  isInvalid={formik.touched.username && !!formik.errors.username}
+                  className="auth-input"
+                />
+                {formik.touched.username && formik.errors.username && (
+                  <div className="error-text">{formik.errors.username}</div>
+                )}
+              </Form.Group>
+
+              <Form.Group className="mb-4">
+                <Form.Label className="fw-semibold">Пароль</Form.Label>
+                <Form.Control
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Введите пароль"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.password}
+                  isInvalid={formik.touched.password && !!formik.errors.password}
+                  className="auth-input"
+                />
+                {formik.touched.password && formik.errors.password && (
+                  <div className="error-text">{formik.errors.password}</div>
+                )}
+              </Form.Group>
+
+              <Button 
+                type="submit" 
+                className="auth-btn mb-3"
+              >
+                Войти
+              </Button>
+
+              <div className="text-center">
+                <span className="text-muted">Нет аккаунта? </span>
+                <Link to="/register" className="auth-link">
+                  Регистрация
+                </Link>
+              </div>
+            </Form>
+          </div>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
+export default Login;
