@@ -1,8 +1,16 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
+import { logout } from '../store/slices/authSlice';
 
 const Home = () => {
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
       <Row className="w-100">
@@ -12,22 +20,27 @@ const Home = () => {
             <p className="text-muted mb-4 fs-5">
               Добро пожаловать в чат-приложение!
             </p>
+            <div className="alert alert-success">
+              Вы успешно авторизованы!
+            </div>
             <p className="text-muted mb-4">
-              Здесь вы можете общаться с друзьями и коллегами в реальном времени.
+              Здесь будет чат. Страница временно защищена.
             </p>
-            <Link to="/login">
-              <Button 
-                variant="primary" 
-                size="lg"
-                className="auth-btn"
-              >
-                Войти в чат
-              </Button>
-            </Link>
+            <Button 
+              variant="danger" 
+              onClick={handleLogout}
+              className="mb-3"
+              style={{
+                borderRadius: '12px',
+                padding: '10px 30px',
+                fontWeight: '600'
+              }}
+            >
+              Выйти
+            </Button>
             <div className="mt-3">
-              <span className="text-muted">Нет аккаунта? </span>
-              <Link to="/register" className="auth-link">
-                Регистрация
+              <Link to="/login" className="auth-link">
+                ← На страницу входа
               </Link>
             </div>
           </div>

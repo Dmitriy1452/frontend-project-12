@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
-import { Link } from 'react-router-dom';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
+import { login, clearError } from '../store/slices/authSlice';
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isLoading, error, isAuthenticated } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -20,15 +32,20 @@ const Login = () => {
 
       if (!values.password) {
         errors.password = 'Пароль обязателен';
-      } else if (values.password.length < 6) {
-        errors.password = 'Пароль должен содержать минимум 6 символов';
+      } else if (values.password.length < 3) {
+        errors.password = 'Пароль должен содержать минимум 3 символа';
       }
 
       return errors;
     },
-    onSubmit: (values) => {
-      console.log('Данные формы:', values);
-      alert('Форма отправлена! (Отправка ещё не реализована)');
+    onSubmit: async (values) => {
+      dispatch(clearError());
+      
+      const result = await dispatch(login(values));
+      
+      if (login.fulfilled.match(result)) {
+        navigate('/');
+      }
     },
   });
 
@@ -39,6 +56,12 @@ const Login = () => {
           <div className="auth-card">
             <h1 className="auth-title display-6">Hexlet Chat</h1>
             
+            {error && (
+              <Alert variant="danger" className="mb-3">
+                {error}
+              </Alert>
+            )}
+
             <Form onSubmit={formik.handleSubmit}>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Имя пользователя</Form.Label>
@@ -52,6 +75,7 @@ const Login = () => {
                   value={formik.values.username}
                   isInvalid={formik.touched.username && !!formik.errors.username}
                   className="auth-input"
+                  disabled={isLoading}
                 />
                 {formik.touched.username && formik.errors.username && (
                   <div className="error-text">{formik.errors.username}</div>
@@ -70,6 +94,7 @@ const Login = () => {
                   value={formik.values.password}
                   isInvalid={formik.touched.password && !!formik.errors.password}
                   className="auth-input"
+                  disabled={isLoading}
                 />
                 {formik.touched.password && formik.errors.password && (
                   <div className="error-text">{formik.errors.password}</div>
@@ -79,8 +104,16 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="auth-btn mb-3"
+                disabled={isLoading}
               >
-                Войти
+                {isLoading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Вход...
+                  </>
+                ) : (
+                  'Войти'
+                )}
               </Button>
 
               <div className="text-center">
@@ -88,6 +121,12 @@ const Login = () => {
                 <Link to="/register" className="auth-link">
                   Регистрация
                 </Link>
+              </div>
+              
+              <div className="text-center mt-2">
+                <small className="text-muted">
+                  Тестовые данные: admin / admin
+                </small>
               </div>
             </Form>
           </div>
