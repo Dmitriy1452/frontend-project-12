@@ -1,41 +1,86 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Form, Button, InputGroup } from 'react-bootstrap';
-import { createMessage } from '../store/slices/messagesSlice';
+import { Form, Button, InputGroup, Alert, Spinner } from 'react-bootstrap';
+import { sendMessage } from '../store/slices/messagesSlice';
 
-const MessageForm = () => {
+const MessageForm = ({ currentChannelId }) => {
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
-  const { currentChannelId } = useSelector((state) => state.channels);
+  const [error, setError] = useState(null);
   const { username } = useSelector((state) => state.auth);
+  const { sendingMessage } = useSelector((state) => state.messages);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    setError(null);
 
-    dispatch(createMessage({
-      body: message,
-      channelId: currentChannelId,
-      username: username,
-    }));
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) return;
 
-    setMessage('');
+    try {
+      await dispatch(sendMessage({
+        body: trimmedMessage,
+        channelId: currentChannelId,
+        username: username,
+      })).unwrap();
+      setMessage('');
+    } catch (err) {
+      setError('Не удалось отправить сообщение. Попробуйте позже.');
+      console.error('Send message error:', err);
+    }
   };
 
   return (
-    <Form onSubmit={handleSubmit} className="mt-3">
-      <InputGroup>
-        <Form.Control
-          type="text"
-          placeholder="Введите сообщение..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <Button type="submit" variant="primary">
-          Отправить
-        </Button>
-      </InputGroup>
-    </Form>
+    <>
+      {error && (
+        <Alert variant="danger" dismissible onClose={() => setError(null)} className="mb-2">
+          {error}
+        </Alert>
+      )}
+      <Form onSubmit={handleSubmit} className="h-100 d-flex align-items-center">
+        <InputGroup>
+          <Form.Control
+            type="text"
+            placeholder="Введите сообщение..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            disabled={sendingMessage}
+            style={{
+              borderRadius: '20px 0 0 20px',
+              border: '1px solid #dee2e6',
+              padding: '10px 16px',
+            }}
+          />
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={sendingMessage || !message.trim()}
+            style={{
+              borderRadius: '0 20px 20px 0',
+              padding: '10px 24px',
+              backgroundColor: '#0d6efd',
+              border: '1px solid #0d6efd',
+            }}
+          >
+            {sendingMessage ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                  className="me-2"
+                />
+                Отправка...
+              </>
+            ) : (
+              'Отправить'
+            )}
+          </Button>
+        </InputGroup>
+      </Form>
+    </>
   );
 };
 

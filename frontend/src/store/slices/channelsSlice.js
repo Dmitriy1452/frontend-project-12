@@ -15,9 +15,9 @@ export const fetchChannels = createAsyncThunk(
 
 export const createChannel = createAsyncThunk(
   'channels/create',
-  async (channelData, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
-      const response = await channelsAPI.create(channelData);
+      const response = await channelsAPI.create(data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Ошибка создания канала');
@@ -25,38 +25,16 @@ export const createChannel = createAsyncThunk(
   }
 );
 
-export const updateChannel = createAsyncThunk(
-  'channels/update',
-  async ({ id, data }, { rejectWithValue }) => {
-    try {
-      const response = await channelsAPI.update(id, data);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка обновления канала');
-    }
-  }
-);
-
-export const deleteChannel = createAsyncThunk(
-  'channels/delete',
-  async (id, { rejectWithValue }) => {
-    try {
-      await channelsAPI.delete(id);
-      return id;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка удаления канала');
-    }
-  }
-);
+const initialState = {
+  items: [],
+  currentChannelId: null,
+  isLoading: false,
+  error: null,
+};
 
 const channelsSlice = createSlice({
   name: 'channels',
-  initialState: {
-    items: [],
-    currentChannelId: null,
-    isLoading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
     setCurrentChannel: (state, action) => {
       state.currentChannelId = action.payload;
@@ -86,18 +64,6 @@ const channelsSlice = createSlice({
       .addCase(createChannel.fulfilled, (state, action) => {
         state.items.push(action.payload);
         state.currentChannelId = action.payload.id;
-      })
-      .addCase(updateChannel.fulfilled, (state, action) => {
-        const index = state.items.findIndex(ch => ch.id === action.payload.id);
-        if (index !== -1) {
-          state.items[index] = action.payload;
-        }
-      })
-      .addCase(deleteChannel.fulfilled, (state, action) => {
-        state.items = state.items.filter(ch => ch.id !== action.payload);
-        if (state.currentChannelId === action.payload) {
-          state.currentChannelId = state.items[0]?.id || null;
-        }
       });
   },
 });

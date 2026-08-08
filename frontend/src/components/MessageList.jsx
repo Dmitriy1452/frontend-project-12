@@ -1,40 +1,62 @@
 import React, { useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Card, ListGroup } from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
 
-const MessageList = () => {
-  const { items: messages } = useSelector((state) => state.messages);
-  const { currentChannelId } = useSelector((state) => state.channels);
+const MessageList = ({ messages }) => {
   const { username } = useSelector((state) => state.auth);
   const messagesEndRef = useRef(null);
 
-  const channelMessages = messages.filter(
-    msg => msg.channelId === currentChannelId
-  );
-
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [channelMessages]);
+  }, [messages]);
+
+  if (messages.length === 0) {
+    return (
+      <div className="text-center text-muted mt-5">
+        <p>Нет сообщений. Будьте первым! 😊</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="message-list" style={{ height: '400px', overflowY: 'auto' }}>
-      <ListGroup variant="flush">
-        {channelMessages.map((message) => (
-          <ListGroup.Item key={message.id} className="border-0 px-0">
+    <ListGroup variant="flush" style={{ backgroundColor: '#ffffff' }}>
+      {messages.map((message) => {
+        const isOwnMessage = message.username === username;
+        return (
+          <ListGroup.Item 
+            key={message.id} 
+            className="border-0 px-0 py-2"
+            style={{ backgroundColor: 'transparent' }}
+          >
             <div>
-              <strong className={message.username === username ? 'text-primary' : 'text-secondary'}>
+              <strong 
+                className={isOwnMessage ? 'text-primary' : 'text-secondary'}
+                style={{ fontWeight: '600' }}
+              >
                 {message.username}
               </strong>
-              <span className="text-muted ms-2" style={{ fontSize: '0.8rem' }}>
+              <span className="text-muted ms-2" style={{ fontSize: '0.75rem' }}>
                 {new Date().toLocaleTimeString()}
               </span>
             </div>
-            <div className="mt-1">{message.body}</div>
+            <div 
+              className="mt-1"
+              style={{
+                backgroundColor: isOwnMessage ? '#e7f3ff' : '#f1f3f5',
+                padding: '8px 12px',
+                borderRadius: '12px',
+                display: 'inline-block',
+                maxWidth: '80%',
+                wordWrap: 'break-word',
+              }}
+            >
+              {message.body}
+            </div>
           </ListGroup.Item>
-        ))}
-        <div ref={messagesEndRef} />
-      </ListGroup>
-    </div>
+        );
+      })}
+      <div ref={messagesEndRef} />
+    </ListGroup>
   );
 };
 

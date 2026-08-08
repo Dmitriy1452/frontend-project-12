@@ -70,13 +70,60 @@
   margin-top: 5px;
 }
 
-.notfound-icon {
-  font-size: 80px;
-  margin-bottom: 20px;
+.chat-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.notfound-title {
-  font-size: 72px;
-  font-weight: 700;
-  color: #667eea;
+.chat-header {
+  flex-shrink: 0;
+}
+
+.chat-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.channels-list {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.messages-area {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.message-input-area {
+  flex-shrink: 0;
+}
+
+.list-group-item.active {
+  background-color: #e7f3ff !important;
+  border-color: #e7f3ff !important;
+  color: #0d6efd !important;
+  font-weight: 600;
+}
+
+.list-group-item-action:hover {
+  background-color: #f8f9fa !important;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c7cd;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0a7ae;
 }

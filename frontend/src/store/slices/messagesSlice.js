@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { messagesAPI } from '../../api';
+import { getSocket } from '../../socket/socket';
 
 export const fetchMessages = createAsyncThunk(
   'messages/fetchAll',
@@ -13,52 +14,40 @@ export const fetchMessages = createAsyncThunk(
   }
 );
 
-export const createMessage = createAsyncThunk(
-  'messages/create',
+export const sendMessage = createAsyncThunk(
+  'messages/send',
   async (messageData, { rejectWithValue }) => {
     try {
       const response = await messagesAPI.create(messageData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка создания сообщения');
+      return rejectWithValue(error.response?.data || 'Ошибка отправки сообщения');
     }
   }
 );
 
-export const updateMessage = createAsyncThunk(
-  'messages/update',
-  async ({ id, data }, { rejectWithValue }) => {
-    try {
-      const response = await messagesAPI.update(id, data);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка обновления сообщения');
-    }
-  }
-);
-
-export const deleteMessage = createAsyncThunk(
-  'messages/delete',
-  async (id, { rejectWithValue }) => {
-    try {
-      await messagesAPI.delete(id);
-      return id;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка удаления сообщения');
-    }
-  }
-);
+const initialState = {
+  items: [],
+  isLoading: false,
+  error: null,
+  sendingMessage: false,
+};
 
 const messagesSlice = createSlice({
   name: 'messages',
-  initialState: {
-    items: [],
-    isLoading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
+    addMessage: (state, action) => {
+      const exists = state.items.some(msg => msg.id === action.payload.id);
+      if (!exists) {
+        state.items.push(action.payload);
+      }
+    },
     clearMessages: (state) => {
       state.items = [];
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -75,20 +64,23 @@ const messagesSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      .addCase(createMessage.fulfilled, (state, action) => {
-        state.items.push(action.payload);
+      .addCase(sendMessage.pending, (state) => {
+        state.sendingMessage = true;
+        state.error = null;
       })
-      .addCase(updateMessage.fulfilled, (state, action) => {
-        const index = state.items.findIndex(msg => msg.id === action.payload.id);
-        if (index !== -1) {
-          state.items[index] = action.payload;
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.sendingMessage = false;
+        const exists = state.items.some(msg => msg.id === action.payload.id);
+        if (!exists) {
+          state.items.push(action.payload);
         }
       })
-      .addCase(deleteMessage.fulfilled, (state, action) => {
-        state.items = state.items.filter(msg => msg.id !== action.payload);
+      .addCase(sendMessage.rejected, (state, action) => {
+        state.sendingMessage = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearMessages } = messagesSlice.actions;
+export const { addMessage, clearMessages, setError } = messagesSlice.actions;
 export default messagesSlice.reducer;
