@@ -2,15 +2,25 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { getSocket } from '../socket/socket';
-import { fetchChannels } from '../store/slices/channelsSlice';
-import { fetchMessages, addMessage } from '../store/slices/messagesSlice';
+import { 
+  fetchChannels, 
+  addChannel, 
+  removeChannel, 
+  renameChannel 
+} from '../store/slices/channelsSlice';
+import { fetchMessages, addMessage, removeMessagesByChannel } from '../store/slices/messagesSlice';
 import ChannelsList from './ChannelsList';
 import MessageList from './MessageList';
 import MessageForm from './MessageForm';
 
 const Chat = () => {
   const dispatch = useDispatch();
-  const { items: channels, currentChannelId, isLoading: channelsLoading, error: channelsError } = useSelector((state) => state.channels);
+  const { 
+    items: channels, 
+    currentChannelId, 
+    isLoading: channelsLoading, 
+    error: channelsError 
+  } = useSelector((state) => state.channels);
   const { items: messages, isLoading: messagesLoading, error: messagesError } = useSelector((state) => state.messages);
 
   useEffect(() => {
@@ -28,14 +38,32 @@ const Chat = () => {
     }
 
     const handleNewMessage = (message) => {
-      console.log('📨 New message via WebSocket:', message);
       dispatch(addMessage(message));
     };
 
+    const handleNewChannel = (channel) => {
+      dispatch(addChannel(channel));
+    };
+
+    const handleRemoveChannel = (channelId) => {
+      dispatch(removeChannel(channelId));
+      dispatch(removeMessagesByChannel(channelId));
+    };
+
+    const handleRenameChannel = (channel) => {
+      dispatch(renameChannel(channel));
+    };
+
     socket.on('newMessage', handleNewMessage);
+    socket.on('newChannel', handleNewChannel);
+    socket.on('removeChannel', handleRemoveChannel);
+    socket.on('renameChannel', handleRenameChannel);
 
     return () => {
       socket.off('newMessage', handleNewMessage);
+      socket.off('newChannel', handleNewChannel);
+      socket.off('removeChannel', handleRemoveChannel);
+      socket.off('renameChannel', handleRenameChannel);
     };
   }, [dispatch]);
 
@@ -60,18 +88,14 @@ const Chat = () => {
 
   return (
     <Row className="flex-grow-1 m-0" style={{ height: 'calc(100vh - 60px)' }}>
-      {/* Левая панель - каналы (белый фон) */}
       <Col md={3} className="bg-white border-end p-0" style={{ height: '100%', overflowY: 'auto' }}>
         <ChannelsList channels={channels} currentChannelId={currentChannelId} />
       </Col>
 
-      {/* Правая панель - чат (белый фон) */}
       <Col md={9} className="d-flex flex-column p-0 bg-white" style={{ height: '100%' }}>
-        {/* Сообщения */}
         <div className="flex-grow-1 overflow-auto p-3" style={{ height: 'calc(100% - 80px)', backgroundColor: '#ffffff' }}>
           <MessageList messages={currentMessages} />
         </div>
-        {/* Форма ввода */}
         <div className="p-3 border-top bg-white" style={{ height: '80px' }}>
           <MessageForm currentChannelId={currentChannelId} />
         </div>
