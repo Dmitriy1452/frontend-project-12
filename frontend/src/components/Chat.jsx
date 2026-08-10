@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Row, Col, Spinner, Alert } from 'react-bootstrap';
@@ -8,10 +8,13 @@ import { fetchMessages, addMessage } from '../store/slices/messagesSlice';
 import ChannelsList from './ChannelsList';
 import MessageList from './MessageList';
 import MessageForm from './MessageForm';
+import useToast from '../hooks/useToast';
 
 const Chat = () => {
   const { t } = useTranslation();
+  const { showError } = useToast();
   const dispatch = useDispatch();
+  const [socketReady, setSocketReady] = useState(false);
   const { items: channels, currentChannelId, isLoading: channelsLoading, error: channelsError } = useSelector((state) => state.channels);
   const { items: messages, isLoading: messagesLoading, error: messagesError } = useSelector((state) => state.messages);
 
@@ -22,29 +25,67 @@ const Chat = () => {
 
   useEffect(() => {
     let socket;
-    try {
-      socket = getSocket();
-    } catch (e) {
-      console.warn('Socket not ready');
-      return;
-    }
+    let timeoutId;
+    
+    const initSocket = () => {
+      try {
+        socket = getSocket();
+        if (socket) {
+          setSocketReady(true);
+          
+          const handleNewMessage = (message) => {
+            dispatch(addMessage(message));
+          };
 
-    const handleNewMessage = (message) => {
-      dispatch(addMessage(message));
+          socket.on('newMessage', handleNewMessage);
+          
+          socket.on('connect_error', () => {
+            showError(t('toasts.networkError'));
+          });
+
+          return () => {
+            socket.off('newMessage', handleNewMessage);
+            socket.off('connect_error');
+          };
+        }
+      } catch (e) {
+        timeoutId = setTimeout(initSocket, 500);
+      }
     };
 
-    socket.on('newMessage', handleNewMessage);
+    initSocket();
 
     return () => {
-      socket.off('newMessage', handleNewMessage);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      if (socket) {
+        socket.off('newMessage');
+        socket.off('connect_error');
+      }
     };
-  }, [dispatch]);
+  }, [dispatch, showError, t]);
+
+  useEffect(() => {
+    if (channelsError && !channelsError.includes('network')) {
+      showError(t('channels.loadError'));
+    }
+  }, [channelsError, showError, t]);
 
   if (channelsLoading || messagesLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '70vh' }}>
         <Spinner animation="border" variant="primary" />
       </div>
+    );
+  }
+
+  if (channelsError && channelsError.includes('network')) {
+    return (
+      <Alert variant="warning" className="m-3">
+        <h5>Ошибка сети</h5>
+        <p>Не удается подключиться к серверу. Проверьте интернет-соединение.</p>
+      </Alert>
     );
   }
 

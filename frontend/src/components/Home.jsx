@@ -1,27 +1,31 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { Container, Button } from 'react-bootstrap';
-import { logout } from '../store/slices/authSlice';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Container } from 'react-bootstrap';
 import { initializeSocket, disconnectSocket } from '../socket/socket';
 import Chat from './Chat';
 
 const Home = () => {
   const dispatch = useDispatch();
-  const token = localStorage.getItem('token');
+  const token = useSelector((state) => state.auth.token);
+  const [socketInitialized, setSocketInitialized] = useState(false);
 
   useEffect(() => {
-    if (token) {
-      initializeSocket(token);
+    if (token && !socketInitialized) {
+      const timeoutId = setTimeout(() => {
+        initializeSocket(token);
+        setSocketInitialized(true);
+      }, 500);
+      
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
+    
     return () => {
       disconnectSocket();
+      setSocketInitialized(false);
     };
-  }, [token]);
-
-  const handleLogout = () => {
-    dispatch(logout());
-    disconnectSocket();
-  };
+  }, [token, socketInitialized]);
 
   return (
     <Container fluid className="vh-100 d-flex flex-column p-0">
