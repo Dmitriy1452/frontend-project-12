@@ -11,6 +11,7 @@ export const initializeSocket = (token) => {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      timeout: 10000,
     });
 
     socketInstance.on('connect', () => {
@@ -18,7 +19,11 @@ export const initializeSocket = (token) => {
     });
 
     socketInstance.on('connect_error', (error) => {
-      console.error('❌ Socket connection error:', error);
+      console.error('❌ Socket connection error:', error.message);
+      // Если WebSocket не работает - пробуем polling
+      if (socketInstance) {
+        socketInstance.io.opts.transports = ['polling'];
+      }
     });
 
     socketInstance.on('disconnect', (reason) => {

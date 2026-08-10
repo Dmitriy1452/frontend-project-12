@@ -1,15 +1,24 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
+import { Spinner } from 'react-bootstrap';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  const { isAuthenticated, isLoading, error } = useSelector((state) => state.auth);
 
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Загрузка...</span>
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="alert alert-danger">
+          {typeof error === 'string' ? error : 'Произошла ошибка'}
         </div>
       </div>
     );

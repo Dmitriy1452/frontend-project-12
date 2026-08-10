@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5002,
+    host: '0.0.0.0',
     proxy: {
       '/api': {
         target: 'http://localhost:5001',
@@ -19,5 +20,8 @@ export default defineConfig({
         rewriteWsOrigin: true,
       },
     },
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
   },
 });

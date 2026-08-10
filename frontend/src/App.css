@@ -1,9 +1,25 @@
-.app-container {
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.app-wrapper {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-container {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 !important;
 }
 
 .auth-card {
@@ -37,6 +53,10 @@
   box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
 }
 
+.auth-input.is-invalid {
+  border-color: #dc3545;
+}
+
 .auth-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
@@ -50,6 +70,12 @@
 .auth-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.auth-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .auth-link {
@@ -70,6 +96,13 @@
   margin-top: 5px;
 }
 
+.invalid-feedback {
+  display: block;
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
 .chat-container {
   height: 100vh;
   display: flex;
@@ -83,20 +116,6 @@
 .chat-body {
   flex: 1;
   overflow: hidden;
-}
-
-.channels-list {
-  height: 100%;
-  overflow-y: auto;
-}
-
-.messages-area {
-  height: 100%;
-  overflow-y: auto;
-}
-
-.message-input-area {
-  flex-shrink: 0;
 }
 
 .list-group-item.active {
@@ -126,4 +145,66 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a0a7ae;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.message-own {
+  background-color: #e7f3ff;
+  padding: 8px 12px;
+  border-radius: 12px;
+  display: inline-block;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.message-other {
+  background-color: #f1f3f5;
+  padding: 8px 12px;
+  border-radius: 12px;
+  display: inline-block;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.modal-content {
+  border-radius: 16px;
+  border: none;
+}
+
+.modal-header {
+  border-bottom: none;
+  padding: 20px 24px 0 24px;
+}
+
+.modal-footer {
+  border-top: none;
+  padding: 0 24px 20px 24px;
+}
+
+.modal-body {
+  padding: 20px 24px;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.navbar {
+  background-color: white !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }

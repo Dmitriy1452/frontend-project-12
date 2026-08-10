@@ -32,15 +32,14 @@ const Login = () => {
 
       if (!values.password) {
         errors.password = 'Пароль обязателен';
-      } else if (values.password.length < 3) {
-        errors.password = 'Пароль должен содержать минимум 3 символа';
+      } else if (values.password.length < 6) {
+        errors.password = 'Пароль должен содержать минимум 6 символов';
       }
 
       return errors;
     },
     onSubmit: async (values) => {
       dispatch(clearError());
-      
       const result = await dispatch(login(values));
       
       if (login.fulfilled.match(result)) {
@@ -48,6 +47,28 @@ const Login = () => {
       }
     },
   });
+
+  if (isAuthenticated) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center min-vh-100">
+        <Row className="w-100">
+          <Col xs={12} sm={10} md={8} lg={6} className="mx-auto">
+            <div className="auth-card text-center">
+              <h1 className="auth-title display-6">Hexlet Chat</h1>
+              <div className="alert alert-success">
+                Вы уже авторизованы!
+              </div>
+              <Link to="/">
+                <Button className="auth-btn">
+                  Перейти в чат
+                </Button>
+              </Link>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
@@ -58,7 +79,7 @@ const Login = () => {
             
             {error && (
               <Alert variant="danger" className="mb-3">
-                {error}
+                {typeof error === 'string' ? error : 'Произошла ошибка авторизации'}
               </Alert>
             )}
 
@@ -118,14 +139,14 @@ const Login = () => {
 
               <div className="text-center">
                 <span className="text-muted">Нет аккаунта? </span>
-                <Link to="/register" className="auth-link">
+                <Link to="/signup" className="auth-link">
                   Регистрация
                 </Link>
               </div>
               
-              <div className="text-center mt-2">
-                <small className="text-muted">
-                  Тестовые данные: admin / admin
+              <div className="text-center mt-3 p-2 bg-light rounded">
+                <small className="text-muted d-block">
+                  <strong>Тестовый вход:</strong> admin / admin
                 </small>
               </div>
             </Form>
