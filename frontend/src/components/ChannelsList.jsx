@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { ListGroup, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { setCurrentChannel } from '../store/slices/channelsSlice';
 import CreateChannelModal from './modals/CreateChannelModal';
@@ -7,6 +8,7 @@ import DeleteChannelModal from './modals/DeleteChannelModal';
 import RenameChannelModal from './modals/RenameChannelModal';
 
 const ChannelsList = ({ channels, currentChannelId }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -44,14 +46,14 @@ const ChannelsList = ({ channels, currentChannelId }) => {
             onClick={() => handleRenameClick(channel)}
             className="border-0"
           >
-            Переименовать
+            {t('channels.renameTitle')}
           </ListGroup.Item>
           <ListGroup.Item 
             action 
             onClick={() => handleDeleteClick(channel)}
             className="border-0 text-danger"
           >
-            Удалить
+            {t('channels.deleteTitle')}
           </ListGroup.Item>
         </ListGroup>
       </Popover.Body>
@@ -61,7 +63,7 @@ const ChannelsList = ({ channels, currentChannelId }) => {
   return (
     <div className="p-3" style={{ backgroundColor: '#ffffff' }}>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="mb-0 fw-bold text-secondary">Каналы</h5>
+        <h5 className="mb-0 fw-bold text-secondary">{t('channels.title')}</h5>
         <Button 
           variant="primary" 
           size="sm" 
@@ -89,7 +91,7 @@ const ChannelsList = ({ channels, currentChannelId }) => {
                 cursor: 'pointer',
               }}
             >
-              <span># {channel.name}</span>
+              <span>{t('channels.channelPrefix')} {channel.name}</span>
               
               {isRemovable(channel) && (
                 <OverlayTrigger

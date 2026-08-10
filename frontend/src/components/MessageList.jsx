@@ -1,8 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { ListGroup } from 'react-bootstrap';
 
 const MessageList = ({ messages }) => {
+  const { t } = useTranslation();
   const { username } = useSelector((state) => state.auth);
   const messagesEndRef = useRef(null);
 
@@ -13,7 +15,7 @@ const MessageList = ({ messages }) => {
   if (messages.length === 0) {
     return (
       <div className="text-center text-muted mt-5">
-        <p>Нет сообщений. Будьте первым! 😊</p>
+        <p>{t('chat.noMessages')}</p>
       </div>
     );
   }

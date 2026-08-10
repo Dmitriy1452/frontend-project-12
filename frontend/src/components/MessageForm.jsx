@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Form, Button, InputGroup, Alert, Spinner } from 'react-bootstrap';
 import { sendMessage } from '../store/slices/messagesSlice';
 
 const MessageForm = ({ currentChannelId }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
@@ -41,7 +43,7 @@ const MessageForm = ({ currentChannelId }) => {
         <InputGroup>
           <Form.Control
             type="text"
-            placeholder="Введите сообщение..."
+            placeholder={t('chat.messagePlaceholder')}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             disabled={sendingMessage}
@@ -72,10 +74,10 @@ const MessageForm = ({ currentChannelId }) => {
                   aria-hidden="true"
                   className="me-2"
                 />
-                Отправка...
+                {t('chat.sending')}
               </>
             ) : (
-              'Отправить'
+              t('chat.sendButton')
             )}
           </Button>
         </InputGroup>

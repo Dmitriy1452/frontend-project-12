@@ -1,17 +1,22 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Modal, Button, Alert } from 'react-bootstrap';
 import { deleteChannel } from '../../store/slices/channelsSlice';
 
 const DeleteChannelModal = ({ show, onHide, channel }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isDeleting, error } = useSelector((state) => state.channels);
 
   const handleDelete = async () => {
+    if (!channel) return;
+    
     try {
       await dispatch(deleteChannel(channel.id)).unwrap();
       onHide();
     } catch (err) {
+      console.error('Delete error:', err);
     }
   };
 
@@ -20,7 +25,7 @@ const DeleteChannelModal = ({ show, onHide, channel }) => {
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Удалить канал</Modal.Title>
+        <Modal.Title>{t('channels.deleteTitle')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {error && (
@@ -29,18 +34,18 @@ const DeleteChannelModal = ({ show, onHide, channel }) => {
           </Alert>
         )}
         <p>
-          Вы уверены, что хотите удалить канал <strong>#{channel.name}</strong>?
+          {t('channels.deleteConfirm')} <strong>{t('channels.channelPrefix')} {channel.name}</strong>?
         </p>
         <p className="text-muted small">
-          Все сообщения в этом канале будут удалены. Вы будете перемещены в канал #general.
+          {t('channels.deleteWarning')}
         </p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide} disabled={isDeleting}>
-          Отмена
+          {t('channels.cancelButton')}
         </Button>
         <Button variant="danger" onClick={handleDelete} disabled={isDeleting}>
-          {isDeleting ? 'Удаление...' : 'Удалить'}
+          {isDeleting ? `${t('channels.deleteButton')}...` : t('channels.deleteButton')}
         </Button>
       </Modal.Footer>
     </Modal>

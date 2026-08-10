@@ -1,11 +1,13 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Navbar, Container, Button } from 'react-bootstrap';
 import { logout } from '../store/slices/authSlice';
 import { disconnectSocket } from '../socket/socket';
 
 const Header = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, username } = useSelector((state) => state.auth);
@@ -20,7 +22,7 @@ const Header = () => {
     <Navbar bg="white" className="border-bottom shadow-sm py-2">
       <Container fluid>
         <Navbar.Brand as={Link} to="/" className="fw-bold text-primary fs-4">
-          Hexlet Chat
+          {t('app.title')}
         </Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
@@ -33,7 +35,7 @@ const Header = () => {
                 onClick={handleLogout}
                 className="px-3"
               >
-                Выйти
+                {t('app.logout')}
               </Button>
             </div>
           ) : (
@@ -45,7 +47,7 @@ const Header = () => {
                 size="sm"
                 className="px-3"
               >
-                Войти
+                {t('app.login')}
               </Button>
               <Button 
                 as={Link} 
@@ -54,7 +56,7 @@ const Header = () => {
                 size="sm"
                 className="px-3"
               >
-                Регистрация
+                {t('app.signup')}
               </Button>
             </div>
           )}
