@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { ListGroup } from 'react-bootstrap';
+import { filterProfanity } from '../utils/profanityFilter';
 
 const MessageList = ({ messages }) => {
   const { t } = useTranslation();
@@ -24,6 +25,8 @@ const MessageList = ({ messages }) => {
     <ListGroup variant="flush" style={{ backgroundColor: '#ffffff' }}>
       {messages.map((message) => {
         const isOwnMessage = message.username === username;
+        const filteredBody = filterProfanity(message.body);
+        
         return (
           <ListGroup.Item 
             key={message.id} 
@@ -52,7 +55,7 @@ const MessageList = ({ messages }) => {
                 wordWrap: 'break-word',
               }}
             >
-              {message.body}
+              {filteredBody}
             </div>
           </ListGroup.Item>
         );

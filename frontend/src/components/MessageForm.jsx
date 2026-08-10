@@ -4,33 +4,62 @@ import { useTranslation } from 'react-i18next';
 import { Form, Button, InputGroup, Alert, Spinner } from 'react-bootstrap';
 import { sendMessage } from '../store/slices/messagesSlice';
 import useToast from '../hooks/useToast';
+import { validateMessage, filterProfanity } from '../utils/profanityFilter';
 
 const MessageForm = ({ currentChannelId }) => {
   const { t } = useTranslation();
-  const { showError } = useToast();
+  const { showError, showWarning } = useToast();
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
+  const [isFiltered, setIsFiltered] = useState(false);
   const { username } = useSelector((state) => state.auth);
   const { sendingMessage } = useSelector((state) => state.messages);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setIsFiltered(false);
 
     const trimmedMessage = message.trim();
     if (!trimmedMessage) return;
 
+    const validation = validateMessage(trimmedMessage);
+    
+    if (!validation.isValid) {
+      if (validation.filtered) {
+        setError(t('chat.messageProfanity'));
+        showWarning(t('toasts.profanityDetected'));
+        setMessage(validation.filtered);
+        setIsFiltered(true);
+        return;
+      }
+      setError(validation.message);
+      return;
+    }
+
+    const filteredMessage = filterProfanity(trimmedMessage);
+    
     try {
       await dispatch(sendMessage({
-        body: trimmedMessage,
+        body: filteredMessage,
         channelId: currentChannelId,
         username: username,
       })).unwrap();
       setMessage('');
+      setIsFiltered(false);
     } catch (err) {
       setError(t('chat.sendError'));
       showError(t('chat.sendError'));
+    }
+  };
+
+  const handleMessageChange = (e) => {
+    const newMessage = e.target.value;
+    setMessage(newMessage);
+    setIsFiltered(false);
+    if (error) {
+      setError(null);
     }
   };
 
@@ -41,13 +70,18 @@ const MessageForm = ({ currentChannelId }) => {
           {error}
         </Alert>
       )}
+      {isFiltered && (
+        <Alert variant="info" className="mb-2">
+          Сообщение было отфильтровано от нецензурных слов
+        </Alert>
+      )}
       <Form onSubmit={handleSubmit} className="h-100 d-flex align-items-center">
         <InputGroup>
           <Form.Control
             type="text"
             placeholder={t('chat.messagePlaceholder')}
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleMessageChange}
             disabled={sendingMessage}
             style={{
               borderRadius: '20px 0 0 20px',

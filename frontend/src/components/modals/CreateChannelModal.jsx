@@ -6,10 +6,11 @@ import * as Yup from 'yup';
 import { Modal, Button, Alert, Form } from 'react-bootstrap';
 import { createChannel } from '../../store/slices/channelsSlice';
 import useToast from '../../hooks/useToast';
+import { validateChannelName, filterProfanity } from '../../utils/profanityFilter';
 
 const CreateChannelModal = ({ show, onHide }) => {
   const { t } = useTranslation();
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError, showWarning } = useToast();
   const dispatch = useDispatch();
   const { items: channels, isCreating, error } = useSelector((state) => state.channels);
   const inputRef = useRef(null);
@@ -29,13 +30,37 @@ const CreateChannelModal = ({ show, onHide }) => {
         channels.map(ch => ch.name),
         t('channels.channelExists')
       )
+      .test('profanity', t('channels.channelNameProfanity'), function(value) {
+        if (!value) return true;
+        const validation = validateChannelName(value);
+        if (!validation.isValid) {
+          return this.createError({
+            message: validation.message,
+            path: 'name',
+          });
+        }
+        return true;
+      })
       .required(t('channels.channelNameRequired')),
   });
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const handleSubmit = async (values, { resetForm, setFieldValue }) => {
     try {
-      const result = await dispatch(createChannel({ name: values.name })).unwrap();
-      showSuccess(t('channels.createSuccess', { name: values.name }));
+      const validation = validateChannelName(values.name);
+      
+      if (!validation.isValid) {
+        showWarning(t('toasts.profanityDetected'));
+        if (validation.filtered) {
+          setFieldValue('name', validation.filtered);
+          return;
+        }
+        return;
+      }
+
+      const filteredName = filterProfanity(values.name);
+      
+      const result = await dispatch(createChannel({ name: filteredName })).unwrap();
+      showSuccess(t('channels.createSuccess', { name: filteredName }));
       resetForm();
       onHide();
     } catch (err) {
@@ -53,7 +78,7 @@ const CreateChannelModal = ({ show, onHide }) => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ handleSubmit, isSubmitting, values, errors, touched, isValid }) => (
+        {({ handleSubmit, isSubmitting, values, errors, touched, isValid, setFieldValue }) => (
           <FormikForm onSubmit={handleSubmit}>
             <Modal.Body>
               {error && (
@@ -70,6 +95,10 @@ const CreateChannelModal = ({ show, onHide }) => {
                   className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
                   placeholder={t('channels.channelNamePlaceholder')}
                   disabled={isCreating}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFieldValue('name', value);
+                  }}
                 />
                 <ErrorMessage name="name" component="div" className="invalid-feedback" />
               </Form.Group>

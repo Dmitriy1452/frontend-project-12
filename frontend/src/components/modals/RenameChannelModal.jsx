@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { Modal, Button, Alert, Form } from 'react-bootstrap';
 import { updateChannel } from '../../store/slices/channelsSlice';
 import useToast from '../../hooks/useToast';
+import { validateChannelName, filterProfanity } from '../../utils/profanityFilter';
 
 const RenameChannelModal = ({ show, onHide, channel }) => {
   const { t } = useTranslation();
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError, showWarning } = useToast();
   const dispatch = useDispatch();
   const { items: channels, isUpdating, error } = useSelector((state) => state.channels);
   const inputRef = useRef(null);
@@ -27,17 +28,31 @@ const RenameChannelModal = ({ show, onHide, channel }) => {
     
     if (!newName || newName === channel.name) return;
     
+    const validation = validateChannelName(newName);
+    
+    if (!validation.isValid) {
+      showWarning(t('toasts.profanityDetected'));
+      if (validation.filtered) {
+        form.name.value = validation.filtered;
+        showWarning('Предлагаемый вариант: ' + validation.filtered);
+        return;
+      }
+      return;
+    }
+    
     if (channels.some(ch => ch.id !== channel.id && ch.name === newName)) {
       showError(t('channels.channelExists'));
       return;
     }
     
+    const filteredName = filterProfanity(newName);
+    
     try {
       await dispatch(updateChannel({ 
         id: channel.id, 
-        data: { name: newName } 
+        data: { name: filteredName } 
       })).unwrap();
-      showSuccess(t('channels.renameSuccess', { name: newName }));
+      showSuccess(t('channels.renameSuccess', { name: filteredName }));
       onHide();
     } catch (err) {
       showError(t('channels.renameError'));
