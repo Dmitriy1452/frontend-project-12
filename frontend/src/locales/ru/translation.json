@@ -18,7 +18,11 @@
     "usernamePlaceholder": "Введите имя пользователя",
     "passwordPlaceholder": "Введите пароль",
     "confirmPasswordPlaceholder": "Подтвердите пароль",
-    "testCredentials": "Тестовый вход: admin / admin"
+    "testCredentials": "Тестовый вход: admin / admin",
+    "loginSuccess": "Добро пожаловать, {{username}}!",
+    "signupSuccess": "Регистрация прошла успешно!",
+    "loginError": "Ошибка авторизации",
+    "signupError": "Ошибка регистрации"
   },
   "errors": {
     "usernameRequired": "Имя пользователя обязательно",
@@ -33,7 +37,8 @@
     "loginFailed": "Неверное имя пользователя или пароль",
     "signupFailed": "Ошибка регистрации",
     "authError": "Произошла ошибка авторизации",
-    "serverError": "Ошибка сервера"
+    "serverError": "Ошибка сервера",
+    "networkError": "Ошибка сети. Проверьте подключение."
   },
   "channels": {
     "title": "Каналы",
@@ -56,13 +61,22 @@
     "cancelButton": "Отмена",
     "deleteConfirm": "Вы уверены, что хотите удалить канал",
     "deleteWarning": "Все сообщения в этом канале будут удалены.",
-    "channelPrefix": "#"
+    "channelPrefix": "#",
+    "createSuccess": "Канал #{{name}} создан",
+    "renameSuccess": "Канал переименован в #{{name}}",
+    "deleteSuccess": "Канал #{{name}} удален",
+    "createError": "Ошибка создания канала",
+    "renameError": "Ошибка переименования канала",
+    "deleteError": "Ошибка удаления канала",
+    "loadError": "Ошибка загрузки каналов"
   },
   "chat": {
     "noMessages": "Нет сообщений. Будьте первым! 😊",
     "messagePlaceholder": "Введите сообщение...",
     "sendButton": "Отправить",
-    "sending": "Отправка..."
+    "sending": "Отправка...",
+    "sendError": "Ошибка отправки сообщения",
+    "loadError": "Ошибка загрузки сообщений"
   },
   "modals": {
     "loading": "Загрузка..."
@@ -72,5 +86,11 @@
     "description": "Извините, запрошенная страница не существует.",
     "goHome": "Вернуться на главную",
     "checkUrl": "Проверьте правильность URL-адреса"
+  },
+  "toasts": {
+    "networkError": "Потеря соединения с сервером",
+    "networkRestored": "Соединение восстановлено",
+    "loadingError": "Ошибка загрузки данных",
+    "unknownError": "Произошла неизвестная ошибка"
   }
 }
