@@ -1,0 +1,76 @@
+{
+  "app": {
+    "title": "Hexlet Chat",
+    "logout": "Выйти",
+    "login": "Войти",
+    "signup": "Регистрация"
+  },
+  "auth": {
+    "loginTitle": "Войти",
+    "signupTitle": "Регистрация",
+    "username": "Имя пользователя",
+    "password": "Пароль",
+    "confirmPassword": "Подтверждение пароля",
+    "loginButton": "Войти",
+    "signupButton": "Зарегистрироваться",
+    "noAccount": "Нет аккаунта?",
+    "haveAccount": "Уже есть аккаунт?",
+    "usernamePlaceholder": "Введите имя пользователя",
+    "passwordPlaceholder": "Введите пароль",
+    "confirmPasswordPlaceholder": "Подтвердите пароль",
+    "testCredentials": "Тестовый вход: admin / admin"
+  },
+  "errors": {
+    "usernameRequired": "Имя пользователя обязательно",
+    "usernameMin": "Имя должно содержать минимум 3 символа",
+    "usernameMax": "Имя должно содержать максимум 20 символов",
+    "usernameInvalid": "Разрешены только буквы, цифры, _ и -",
+    "usernameTaken": "Пользователь с таким именем уже существует",
+    "passwordRequired": "Пароль обязателен",
+    "passwordMin": "Пароль должен содержать минимум 6 символов",
+    "passwordMatch": "Пароли должны совпадать",
+    "confirmPasswordRequired": "Подтверждение пароля обязательно",
+    "loginFailed": "Неверное имя пользователя или пароль",
+    "signupFailed": "Ошибка регистрации",
+    "authError": "Произошла ошибка авторизации",
+    "serverError": "Ошибка сервера"
+  },
+  "channels": {
+    "title": "Каналы",
+    "create": "Создать канал",
+    "createTitle": "Создать канал",
+    "renameTitle": "Переименовать канал",
+    "deleteTitle": "Удалить канал",
+    "channelName": "Название канала",
+    "channelNamePlaceholder": "Введите название канала",
+    "channelNewName": "Новое название канала",
+    "channelNewNamePlaceholder": "Введите новое название",
+    "channelNameRequired": "Имя канала обязательно",
+    "channelNameMin": "Имя канала должно быть от 3 до 20 символов",
+    "channelNameMax": "Имя канала должно быть от 3 до 20 символов",
+    "channelNameInvalid": "Разрешены только буквы, цифры, _ и -",
+    "channelExists": "Канал с таким именем уже существует",
+    "createButton": "Создать",
+    "renameButton": "Сохранить",
+    "deleteButton": "Удалить",
+    "cancelButton": "Отмена",
+    "deleteConfirm": "Вы уверены, что хотите удалить канал",
+    "deleteWarning": "Все сообщения в этом канале будут удалены.",
+    "channelPrefix": "#"
+  },
+  "chat": {
+    "noMessages": "Нет сообщений. Будьте первым! 😊",
+    "messagePlaceholder": "Введите сообщение...",
+    "sendButton": "Отправить",
+    "sending": "Отправка..."
+  },
+  "modals": {
+    "loading": "Загрузка..."
+  },
+  "notFound": {
+    "title": "Страница не найдена",
+    "description": "Извините, запрошенная страница не существует.",
+    "goHome": "Вернуться на главную",
+    "checkUrl": "Проверьте правильность URL-адреса"
+  }
+}
