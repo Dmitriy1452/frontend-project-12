@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, InputGroup, Alert, Spinner } from 'react-bootstrap';
 import { sendMessage } from '../store/slices/messagesSlice';
+import useToast from '../hooks/useToast';
 
 const MessageForm = ({ currentChannelId }) => {
   const { t } = useTranslation();
+  const { showError } = useToast();
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
@@ -27,8 +29,8 @@ const MessageForm = ({ currentChannelId }) => {
       })).unwrap();
       setMessage('');
     } catch (err) {
-      setError('Не удалось отправить сообщение. Попробуйте позже.');
-      console.error('Send message error:', err);
+      setError(t('chat.sendError'));
+      showError(t('chat.sendError'));
     }
   };
 

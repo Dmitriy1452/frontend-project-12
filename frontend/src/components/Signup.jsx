@@ -6,9 +6,11 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Container, Row, Col, Form as BSForm, Button, Alert } from 'react-bootstrap';
 import { signup, clearError } from '../store/slices/authSlice';
+import useToast from '../hooks/useToast';
 
 const Signup = () => {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useToast();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isRegistering, error, isAuthenticated } = useSelector((state) => state.auth);
@@ -50,10 +52,11 @@ const Signup = () => {
       })).unwrap();
       
       if (result) {
+        showSuccess(t('auth.signupSuccess'));
         navigate('/');
       }
     } catch (err) {
-      console.error('Signup error:', err);
+      showError(err || t('auth.signupError'));
     }
   };
 

@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Modal, Button, Alert, Form } from 'react-bootstrap';
 import { updateChannel } from '../../store/slices/channelsSlice';
+import useToast from '../../hooks/useToast';
 
 const RenameChannelModal = ({ show, onHide, channel }) => {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useToast();
   const dispatch = useDispatch();
   const { items: channels, isUpdating, error } = useSelector((state) => state.channels);
   const inputRef = useRef(null);
@@ -26,7 +28,7 @@ const RenameChannelModal = ({ show, onHide, channel }) => {
     if (!newName || newName === channel.name) return;
     
     if (channels.some(ch => ch.id !== channel.id && ch.name === newName)) {
-      alert(t('channels.channelExists'));
+      showError(t('channels.channelExists'));
       return;
     }
     
@@ -35,9 +37,10 @@ const RenameChannelModal = ({ show, onHide, channel }) => {
         id: channel.id, 
         data: { name: newName } 
       })).unwrap();
+      showSuccess(t('channels.renameSuccess', { name: newName }));
       onHide();
     } catch (err) {
-      console.error('Update error:', err);
+      showError(t('channels.renameError'));
     }
   };
 

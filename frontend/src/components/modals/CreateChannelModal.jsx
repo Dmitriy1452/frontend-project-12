@@ -5,9 +5,11 @@ import { Formik, Form as FormikForm, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Modal, Button, Alert, Form } from 'react-bootstrap';
 import { createChannel } from '../../store/slices/channelsSlice';
+import useToast from '../../hooks/useToast';
 
 const CreateChannelModal = ({ show, onHide }) => {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useToast();
   const dispatch = useDispatch();
   const { items: channels, isCreating, error } = useSelector((state) => state.channels);
   const inputRef = useRef(null);
@@ -32,11 +34,12 @@ const CreateChannelModal = ({ show, onHide }) => {
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
-      await dispatch(createChannel({ name: values.name })).unwrap();
+      const result = await dispatch(createChannel({ name: values.name })).unwrap();
+      showSuccess(t('channels.createSuccess', { name: values.name }));
       resetForm();
       onHide();
     } catch (err) {
-      console.error('Create channel error:', err);
+      showError(t('channels.createError'));
     }
   };
 

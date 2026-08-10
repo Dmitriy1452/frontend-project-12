@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Modal, Button, Alert } from 'react-bootstrap';
 import { deleteChannel } from '../../store/slices/channelsSlice';
+import useToast from '../../hooks/useToast';
 
 const DeleteChannelModal = ({ show, onHide, channel }) => {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useToast();
   const dispatch = useDispatch();
   const { isDeleting, error } = useSelector((state) => state.channels);
 
@@ -14,9 +16,10 @@ const DeleteChannelModal = ({ show, onHide, channel }) => {
     
     try {
       await dispatch(deleteChannel(channel.id)).unwrap();
+      showSuccess(t('channels.deleteSuccess', { name: channel.name }));
       onHide();
     } catch (err) {
-      console.error('Delete error:', err);
+      showError(t('channels.deleteError'));
     }
   };
 

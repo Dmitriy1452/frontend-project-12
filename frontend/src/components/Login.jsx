@@ -5,9 +5,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import { login, clearError } from '../store/slices/authSlice';
+import useToast from '../hooks/useToast';
 
 const Login = () => {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useToast();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error, isAuthenticated } = useSelector((state) => state.auth);
@@ -45,7 +47,10 @@ const Login = () => {
       const result = await dispatch(login(values));
       
       if (login.fulfilled.match(result)) {
+        showSuccess(t('auth.loginSuccess', { username: values.username }));
         navigate('/');
+      } else if (login.rejected.match(result)) {
+        showError(result.payload || t('auth.loginError'));
       }
     },
   });
@@ -58,7 +63,7 @@ const Login = () => {
             <div className="auth-card text-center">
               <h1 className="auth-title display-6">{t('app.title')}</h1>
               <div className="alert alert-success">
-                Вы уже авторизованы!
+                {t('auth.loginSuccess', { username: 'пользователь' })}
               </div>
               <Link to="/">
                 <Button className="auth-btn">

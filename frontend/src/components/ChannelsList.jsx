@@ -1,20 +1,29 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { ListGroup, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { setCurrentChannel } from '../store/slices/channelsSlice';
 import CreateChannelModal from './modals/CreateChannelModal';
 import DeleteChannelModal from './modals/DeleteChannelModal';
 import RenameChannelModal from './modals/RenameChannelModal';
+import useToast from '../hooks/useToast';
 
 const ChannelsList = ({ channels, currentChannelId }) => {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useToast();
   const dispatch = useDispatch();
+  const { error } = useSelector((state) => state.channels);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
+
+  React.useEffect(() => {
+    if (error) {
+      showError(error);
+    }
+  }, [error, showError]);
 
   const handleChannelSelect = (channelId) => {
     dispatch(setCurrentChannel(channelId));
