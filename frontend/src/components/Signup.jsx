@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import { Container, Row, Col, Form as BSForm, Button, Alert } from 'react-bootstrap';
 import { signup, clearError } from '../store/slices/authSlice';
 import useToast from '../hooks/useToast';
+import { logError } from '../utils/rollbar';
 
 const Signup = () => {
   const { t } = useTranslation();
@@ -56,6 +57,11 @@ const Signup = () => {
         navigate('/');
       }
     } catch (err) {
+      logError(err, { 
+        component: 'Signup', 
+        action: 'signup',
+        username: values.username 
+      });
       showError(err || t('auth.signupError'));
     }
   };

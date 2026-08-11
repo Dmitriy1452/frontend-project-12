@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container } from 'react-bootstrap';
 import { initializeSocket, disconnectSocket } from '../socket/socket';
 import Chat from './Chat';
+import ErrorBoundary from './ErrorBoundary';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -29,7 +30,9 @@ const Home = () => {
 
   return (
     <Container fluid className="vh-100 d-flex flex-column p-0">
-      <Chat />
+      <ErrorBoundary>
+        <Chat />
+      </ErrorBoundary>
     </Container>
   );
 };

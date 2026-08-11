@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import { login, clearError } from '../store/slices/authSlice';
 import useToast from '../hooks/useToast';
+import { logError } from '../utils/rollbar';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -44,13 +45,22 @@ const Login = () => {
     },
     onSubmit: async (values) => {
       dispatch(clearError());
-      const result = await dispatch(login(values));
-      
-      if (login.fulfilled.match(result)) {
-        showSuccess(t('auth.loginSuccess', { username: values.username }));
-        navigate('/');
-      } else if (login.rejected.match(result)) {
-        showError(result.payload || t('auth.loginError'));
+      try {
+        const result = await dispatch(login(values));
+        
+        if (login.fulfilled.match(result)) {
+          showSuccess(t('auth.loginSuccess', { username: values.username }));
+          navigate('/');
+        } else if (login.rejected.match(result)) {
+          showError(result.payload || t('auth.loginError'));
+        }
+      } catch (err) {
+        logError(err, { 
+          component: 'Login', 
+          action: 'login',
+          username: values.username 
+        });
+        showError(t('auth.loginError'));
       }
     },
   });
