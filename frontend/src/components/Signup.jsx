@@ -7,7 +7,6 @@ import * as Yup from 'yup';
 import { Container, Row, Col, Form as BSForm, Button, Alert } from 'react-bootstrap';
 import { signup, clearError } from '../store/slices/authSlice';
 import useToast from '../hooks/useToast';
-import { logError } from '../utils/rollbar';
 
 const Signup = () => {
   const { t } = useTranslation();
@@ -43,7 +42,7 @@ const Signup = () => {
       .required(t('errors.confirmPasswordRequired')),
   });
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const handleSubmit = async (values, { resetForm, setSubmitting }) => {
     dispatch(clearError());
     
     try {
@@ -57,12 +56,8 @@ const Signup = () => {
         navigate('/');
       }
     } catch (err) {
-      logError(err, { 
-        component: 'Signup', 
-        action: 'signup',
-        username: values.username 
-      });
       showError(err || t('auth.signupError'));
+      setSubmitting(false);
     }
   };
 
@@ -88,7 +83,7 @@ const Signup = () => {
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ handleSubmit, isSubmitting, values, errors, touched, isValid }) => (
+              {({ handleSubmit, isSubmitting, values, errors, touched, isValid, dirty }) => (
                 <Form onSubmit={handleSubmit}>
                   <BSForm.Group className="mb-3">
                     <BSForm.Label className="fw-semibold">{t('auth.username')}</BSForm.Label>
@@ -98,7 +93,7 @@ const Signup = () => {
                       name="username"
                       placeholder={t('auth.usernamePlaceholder')}
                       className={`form-control auth-input ${touched.username && errors.username ? 'is-invalid' : ''}`}
-                      disabled={isRegistering}
+                      disabled={isRegistering || isSubmitting}
                     />
                     <ErrorMessage name="username" component="div" className="invalid-feedback" />
                   </BSForm.Group>
@@ -110,7 +105,7 @@ const Signup = () => {
                       name="password"
                       placeholder={t('auth.passwordPlaceholder')}
                       className={`form-control auth-input ${touched.password && errors.password ? 'is-invalid' : ''}`}
-                      disabled={isRegistering}
+                      disabled={isRegistering || isSubmitting}
                     />
                     <ErrorMessage name="password" component="div" className="invalid-feedback" />
                   </BSForm.Group>
@@ -122,7 +117,7 @@ const Signup = () => {
                       name="confirmPassword"
                       placeholder={t('auth.confirmPasswordPlaceholder')}
                       className={`form-control auth-input ${touched.confirmPassword && errors.confirmPassword ? 'is-invalid' : ''}`}
-                      disabled={isRegistering}
+                      disabled={isRegistering || isSubmitting}
                     />
                     <ErrorMessage name="confirmPassword" component="div" className="invalid-feedback" />
                   </BSForm.Group>
@@ -130,9 +125,17 @@ const Signup = () => {
                   <Button 
                     type="submit" 
                     className="auth-btn mb-3"
-                    disabled={isRegistering || !isValid}
+                    disabled={
+                      isRegistering || 
+                      isSubmitting || 
+                      !isValid || 
+                      !dirty || 
+                      !values.username || 
+                      !values.password || 
+                      !values.confirmPassword
+                    }
                   >
-                    {isRegistering ? (
+                    {(isRegistering || isSubmitting) ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                         {t('auth.signupButton')}...
