@@ -130,10 +130,7 @@ const Signup = () => {
                       isSubmitting || 
                       !values.username || 
                       !values.password || 
-                      !values.confirmPassword ||
-                      !!errors.username ||
-                      !!errors.password ||
-                      !!errors.confirmPassword
+                      !values.confirmPassword
                     }
                   >
                     {(isRegistering || isSubmitting) ? (
