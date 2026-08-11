@@ -168,12 +168,7 @@ const Login = () => {
                   {t('app.signup')}
                 </Link>
               </div>
-              
-              <div className="text-center mt-3 p-2 bg-light rounded">
-                <small className="text-muted d-block">
-                  <strong>{t('auth.testCredentials')}</strong>
-                </small>
-              </div>
+
             </Form>
           </div>
         </Col>
