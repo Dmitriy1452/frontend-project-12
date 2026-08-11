@@ -66,7 +66,7 @@ const Signup = () => {
       <Row className="w-100">
         <Col xs={12} sm={10} md={8} lg={6} className="mx-auto">
           <div className="auth-card">
-            <h1 className="auth-title display-6">{t('auth.signupTitle')}</h1>
+            <h1 className="auth-title display-6">Регистрация</h1>
             
             {error && (
               <Alert variant="danger" className="mb-3">
@@ -86,12 +86,12 @@ const Signup = () => {
               {({ handleSubmit, isSubmitting, values, errors, touched, isValid, dirty }) => (
                 <Form onSubmit={handleSubmit} noValidate>
                   <BSForm.Group className="mb-3">
-                    <BSForm.Label className="fw-semibold">{t('auth.username')}</BSForm.Label>
+                    <BSForm.Label className="fw-semibold">Имя пользователя</BSForm.Label>
                     <Field
                       innerRef={inputRef}
                       type="text"
                       name="username"
-                      placeholder={t('auth.usernamePlaceholder')}
+                      placeholder="Ваш ник"
                       className={`form-control auth-input ${touched.username && errors.username ? 'is-invalid' : ''}`}
                       disabled={isRegistering || isSubmitting}
                     />
@@ -99,11 +99,11 @@ const Signup = () => {
                   </BSForm.Group>
 
                   <BSForm.Group className="mb-3">
-                    <BSForm.Label className="fw-semibold">{t('auth.password')}</BSForm.Label>
+                    <BSForm.Label className="fw-semibold">Пароль</BSForm.Label>
                     <Field
                       type="password"
                       name="password"
-                      placeholder={t('auth.passwordPlaceholder')}
+                      placeholder="Пароль"
                       className={`form-control auth-input ${touched.password && errors.password ? 'is-invalid' : ''}`}
                       disabled={isRegistering || isSubmitting}
                     />
@@ -111,11 +111,11 @@ const Signup = () => {
                   </BSForm.Group>
 
                   <BSForm.Group className="mb-4">
-                    <BSForm.Label className="fw-semibold">{t('auth.confirmPassword')}</BSForm.Label>
+                    <BSForm.Label className="fw-semibold">Подтвердите пароль</BSForm.Label>
                     <Field
                       type="password"
                       name="confirmPassword"
-                      placeholder={t('auth.confirmPasswordPlaceholder')}
+                      placeholder="Подтвердите пароль"
                       className={`form-control auth-input ${touched.confirmPassword && errors.confirmPassword ? 'is-invalid' : ''}`}
                       disabled={isRegistering || isSubmitting}
                     />
@@ -139,17 +139,17 @@ const Signup = () => {
                     {(isRegistering || isSubmitting) ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        {t('auth.signupButton')}...
+                        Зарегистрироваться...
                       </>
                     ) : (
-                      t('auth.signupButton')
+                      'Зарегистрироваться'
                     )}
                   </Button>
 
                   <div className="text-center">
-                    <span className="text-muted">{t('auth.haveAccount')} </span>
+                    <span className="text-muted">Уже есть аккаунт? </span>
                     <Link to="/login" className="auth-link">
-                      {t('app.login')}
+                      Войти
                     </Link>
                   </div>
                 </Form>
