@@ -84,7 +84,7 @@ const Signup = () => {
               onSubmit={handleSubmit}
             >
               {({ handleSubmit, isSubmitting, values, errors, touched, isValid, dirty }) => (
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} noValidate>
                   <BSForm.Group className="mb-3">
                     <BSForm.Label className="fw-semibold">{t('auth.username')}</BSForm.Label>
                     <Field
@@ -128,11 +128,12 @@ const Signup = () => {
                     disabled={
                       isRegistering || 
                       isSubmitting || 
-                      !isValid || 
-                      !dirty || 
                       !values.username || 
                       !values.password || 
-                      !values.confirmPassword
+                      !values.confirmPassword ||
+                      !!errors.username ||
+                      !!errors.password ||
+                      !!errors.confirmPassword
                     }
                   >
                     {(isRegistering || isSubmitting) ? (
