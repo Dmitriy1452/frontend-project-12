@@ -2,9 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Container, Row, Col, Form as BSForm, Button, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import { signup, clearError } from '../store/slices/authSlice';
 import useToast from '../hooks/useToast';
 
@@ -42,24 +42,32 @@ const Signup = () => {
       .required(t('errors.confirmPasswordRequired')),
   });
 
-  const handleSubmit = async (values, { resetForm, setSubmitting }) => {
-    dispatch(clearError());
-    
-    try {
-      const result = await dispatch(signup({
-        username: values.username,
-        password: values.password,
-      })).unwrap();
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
+      confirmPassword: '',
+    },
+    validationSchema,
+    onSubmit: async (values, { setSubmitting }) => {
+      dispatch(clearError());
       
-      if (result) {
-        showSuccess(t('auth.signupSuccess'));
-        navigate('/');
+      try {
+        const result = await dispatch(signup({
+          username: values.username,
+          password: values.password,
+        })).unwrap();
+        
+        if (result) {
+          showSuccess(t('auth.signupSuccess'));
+          navigate('/');
+        }
+      } catch (err) {
+        showError(err || t('auth.signupError'));
+        setSubmitting(false);
       }
-    } catch (err) {
-      showError(err || t('auth.signupError'));
-      setSubmitting(false);
-    }
-  };
+    },
+  });
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
@@ -74,85 +82,90 @@ const Signup = () => {
               </Alert>
             )}
 
-            <Formik
-              initialValues={{
-                username: '',
-                password: '',
-                confirmPassword: '',
-              }}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-              validateOnChange={true}
-              validateOnBlur={true}
-            >
-              {({ handleSubmit, isSubmitting, values, errors, touched }) => {
-                const isFormFilled = values.username && values.password && values.confirmPassword;
-                const hasErrors = !!(errors.username || errors.password || errors.confirmPassword);
-                
-                return (
-                  <Form onSubmit={handleSubmit} noValidate>
-                    <BSForm.Group className="mb-3">
-                      <BSForm.Label className="fw-semibold">Имя пользователя</BSForm.Label>
-                      <Field
-                        innerRef={inputRef}
-                        type="text"
-                        name="username"
-                        placeholder="Ваш ник"
-                        className={`form-control auth-input ${touched.username && errors.username ? 'is-invalid' : ''}`}
-                        disabled={isRegistering || isSubmitting}
-                      />
-                      <ErrorMessage name="username" component="div" className="invalid-feedback" />
-                    </BSForm.Group>
+            <Form onSubmit={formik.handleSubmit} noValidate>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-semibold">Имя пользователя</Form.Label>
+                <Form.Control
+                  ref={inputRef}
+                  type="text"
+                  name="username"
+                  placeholder="Ваш ник"
+                  value={formik.values.username}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  isInvalid={formik.touched.username && !!formik.errors.username}
+                  className="auth-input"
+                  disabled={isRegistering || formik.isSubmitting}
+                />
+                {formik.touched.username && formik.errors.username && (
+                  <div className="invalid-feedback d-block">{formik.errors.username}</div>
+                )}
+              </Form.Group>
 
-                    <BSForm.Group className="mb-3">
-                      <BSForm.Label className="fw-semibold">Пароль</BSForm.Label>
-                      <Field
-                        type="password"
-                        name="password"
-                        placeholder="Пароль"
-                        className={`form-control auth-input ${touched.password && errors.password ? 'is-invalid' : ''}`}
-                        disabled={isRegistering || isSubmitting}
-                      />
-                      <ErrorMessage name="password" component="div" className="invalid-feedback" />
-                    </BSForm.Group>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-semibold">Пароль</Form.Label>
+                <Form.Control
+                  type="password"
+                  name="password"
+                  placeholder="Пароль"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  isInvalid={formik.touched.password && !!formik.errors.password}
+                  className="auth-input"
+                  disabled={isRegistering || formik.isSubmitting}
+                />
+                {formik.touched.password && formik.errors.password && (
+                  <div className="invalid-feedback d-block">{formik.errors.password}</div>
+                )}
+              </Form.Group>
 
-                    <BSForm.Group className="mb-4">
-                      <BSForm.Label className="fw-semibold">Подтвердите пароль</BSForm.Label>
-                      <Field
-                        type="password"
-                        name="confirmPassword"
-                        placeholder="Подтвердите пароль"
-                        className={`form-control auth-input ${touched.confirmPassword && errors.confirmPassword ? 'is-invalid' : ''}`}
-                        disabled={isRegistering || isSubmitting}
-                      />
-                      <ErrorMessage name="confirmPassword" component="div" className="invalid-feedback" />
-                    </BSForm.Group>
+              <Form.Group className="mb-4">
+                <Form.Label className="fw-semibold">Подтвердите пароль</Form.Label>
+                <Form.Control
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Подтвердите пароль"
+                  value={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  isInvalid={formik.touched.confirmPassword && !!formik.errors.confirmPassword}
+                  className="auth-input"
+                  disabled={isRegistering || formik.isSubmitting}
+                />
+                {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                  <div className="invalid-feedback d-block">{formik.errors.confirmPassword}</div>
+                )}
+              </Form.Group>
 
-                    <Button 
-                      type="submit" 
-                      className="auth-btn mb-3"
-                      disabled={isRegistering || isSubmitting || !isFormFilled}
-                    >
-                      {(isRegistering || isSubmitting) ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Зарегистрироваться...
-                        </>
-                      ) : (
-                        'Зарегистрироваться'
-                      )}
-                    </Button>
+              <Button 
+                type="submit" 
+                className="auth-btn mb-3"
+                disabled={
+                  isRegistering || 
+                  formik.isSubmitting || 
+                  !formik.values.username || 
+                  !formik.values.password || 
+                  !formik.values.confirmPassword
+                }
+              >
+                {(isRegistering || formik.isSubmitting) ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Зарегистрироваться...
+                  </>
+                ) : (
+                  'Зарегистрироваться'
+                )}
+              </Button>
 
-                    <div className="text-center">
-                      <span className="text-muted">Уже есть аккаунт? </span>
-                      <Link to="/login" className="auth-link">
-                        Войти
-                      </Link>
-                    </div>
-                  </Form>
-                );
-              }}
-            </Formik>
+              <div className="text-center">
+                <span className="text-muted">Уже есть аккаунт? </span>
+                <Link to="/login" className="auth-link">
+                  Войти
+                </Link>
+              </div>
+            </Form>
           </div>
         </Col>
       </Row>
