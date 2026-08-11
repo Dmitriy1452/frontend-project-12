@@ -141,13 +141,7 @@ const Signup = () => {
               <Button 
                 type="submit" 
                 className="auth-btn mb-3"
-                disabled={
-                  isRegistering || 
-                  formik.isSubmitting || 
-                  !formik.values.username || 
-                  !formik.values.password || 
-                  !formik.values.confirmPassword
-                }
+                disabled={isRegistering || formik.isSubmitting}
               >
                 {(isRegistering || formik.isSubmitting) ? (
                   <>

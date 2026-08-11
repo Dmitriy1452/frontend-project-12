@@ -52,7 +52,7 @@ const Login = () => {
       dispatch(clearError());
       
       const actionResult = await dispatch(login(values));
-      т
+      
       if (login.fulfilled.match(actionResult)) {
         const user = actionResult.payload;
         showSuccess(t('auth.loginSuccess', { username: user.username }));
