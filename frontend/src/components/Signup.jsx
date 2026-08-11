@@ -82,9 +82,12 @@ const Signup = () => {
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
+              validateOnChange={true}
+              validateOnBlur={true}
             >
               {({ handleSubmit, isSubmitting, values, errors, touched }) => {
                 const isFormFilled = values.username && values.password && values.confirmPassword;
+                const hasErrors = !!(errors.username || errors.password || errors.confirmPassword);
                 
                 return (
                   <Form onSubmit={handleSubmit} noValidate>
@@ -128,11 +131,7 @@ const Signup = () => {
                     <Button 
                       type="submit" 
                       className="auth-btn mb-3"
-                      disabled={
-                        isRegistering || 
-                        isSubmitting || 
-                        !isFormFilled
-                      }
+                      disabled={isRegistering || isSubmitting || !isFormFilled}
                     >
                       {(isRegistering || isSubmitting) ? (
                         <>
