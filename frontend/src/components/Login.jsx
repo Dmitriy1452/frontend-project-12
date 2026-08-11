@@ -3,10 +3,9 @@ import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import { login, clearError } from '../store/slices/authSlice';
 import useToast from '../hooks/useToast';
-import { logError } from '../utils/rollbar';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -20,6 +19,12 @@ const Login = () => {
       navigate('/');
     }
   }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const formik = useFormik({
     initialValues: {
@@ -43,24 +48,20 @@ const Login = () => {
 
       return errors;
     },
-    onSubmit: async (values) => {
+    onSubmit: async (values, { setSubmitting, setFieldError }) => {
       dispatch(clearError());
-      try {
-        const result = await dispatch(login(values));
-        
-        if (login.fulfilled.match(result)) {
-          showSuccess(t('auth.loginSuccess', { username: values.username }));
-          navigate('/');
-        } else if (login.rejected.match(result)) {
-          showError(result.payload || t('auth.loginError'));
-        }
-      } catch (err) {
-        logError(err, { 
-          component: 'Login', 
-          action: 'login',
-          username: values.username 
-        });
-        showError(t('auth.loginError'));
+      
+      const actionResult = await dispatch(login(values));
+      т
+      if (login.fulfilled.match(actionResult)) {
+        const user = actionResult.payload;
+        showSuccess(t('auth.loginSuccess', { username: user.username }));
+        navigate('/');
+      } else if (login.rejected.match(actionResult)) {
+        const errorMessage = actionResult.payload || t('auth.loginError');
+        showError(errorMessage);
+        setFieldError('password', errorMessage);
+        setSubmitting(false);
       }
     },
   });
@@ -94,9 +95,9 @@ const Login = () => {
           <div className="auth-card">
             <h1 className="auth-title display-6">{t('app.title')}</h1>
             
-            {error && (
+            {(error || formik.errors.password) && (
               <Alert variant="danger" className="mb-3">
-                {typeof error === 'string' ? error : t('errors.authError')}
+                {error || formik.errors.password}
               </Alert>
             )}
 
@@ -113,7 +114,7 @@ const Login = () => {
                   value={formik.values.username}
                   isInvalid={formik.touched.username && !!formik.errors.username}
                   className="auth-input"
-                  disabled={isLoading}
+                  disabled={isLoading || formik.isSubmitting}
                 />
                 {formik.touched.username && formik.errors.username && (
                   <div className="error-text">{formik.errors.username}</div>
@@ -132,7 +133,7 @@ const Login = () => {
                   value={formik.values.password}
                   isInvalid={formik.touched.password && !!formik.errors.password}
                   className="auth-input"
-                  disabled={isLoading}
+                  disabled={isLoading || formik.isSubmitting}
                 />
                 {formik.touched.password && formik.errors.password && (
                   <div className="error-text">{formik.errors.password}</div>
@@ -142,11 +143,18 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="auth-btn mb-3"
-                disabled={isLoading}
+                disabled={isLoading || formik.isSubmitting}
               >
-                {isLoading ? (
+                {(isLoading || formik.isSubmitting) ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                      className="me-2"
+                    />
                     {t('auth.loginButton')}...
                   </>
                 ) : (

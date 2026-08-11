@@ -5,18 +5,29 @@ const extractErrorMessage = (error, defaultMessage) => {
   if (!error) return defaultMessage;
   
   if (error.response) {
-    const data = error.response.data;
-    if (typeof data === 'string') return data;
-    if (data?.message) return data.message;
-    if (data?.error) return data.error;
-    if (data?.statusCode) {
-      if (error.response.status === 401) return 'Неверное имя пользователя или пароль';
-      if (error.response.status === 409) return 'Пользователь с таким именем уже существует';
+    const { status, data } = error.response;
+    
+    if (status === 401) {
+      return 'Неверное имя пользователя или пароль';
     }
+    
+    if (status === 409) {
+      return 'Пользователь с таким именем уже существует';
+    }
+    
+    if (data) {
+      if (typeof data === 'string') return data;
+      if (data.message) return data.message;
+      if (data.error) return data.error;
+    }
+    
     return defaultMessage;
   }
   
-  if (error.message) return error.message;
+  if (error.message) {
+    return error.message;
+  }
+  
   return defaultMessage;
 };
 
