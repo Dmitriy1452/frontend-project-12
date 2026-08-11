@@ -10,17 +10,6 @@ try {
   console.warn('Failed to load Russian dictionary:', error);
 }
 
-const customWords = [
-];
-
-customWords.forEach(word => {
-  try {
-    filter.add(word);
-  } catch (error) {
-    console.warn('Failed to add custom word:', error);
-  }
-});
-
 export const hasProfanity = (text) => {
   if (!text || typeof text !== 'string') return false;
   try {
@@ -42,7 +31,9 @@ export const filterProfanity = (text) => {
 };
 
 export const validateChannelName = (name) => {
-  if (!name) return { isValid: false, message: 'Имя канала обязательно' };
+  if (!name || typeof name !== 'string') {
+    return { isValid: false, message: 'Имя канала обязательно', filtered: '' };
+  }
   
   const hasBadWords = hasProfanity(name);
   if (hasBadWords) {
@@ -57,7 +48,9 @@ export const validateChannelName = (name) => {
 };
 
 export const validateMessage = (message) => {
-  if (!message) return { isValid: false, message: 'Сообщение не может быть пустым' };
+  if (!message || typeof message !== 'string') {
+    return { isValid: false, message: 'Сообщение не может быть пустым', filtered: '' };
+  }
   
   const hasBadWords = hasProfanity(message);
   if (hasBadWords) {

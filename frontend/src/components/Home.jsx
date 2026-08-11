@@ -7,11 +7,11 @@ import ErrorBoundary from './ErrorBoundary';
 
 const Home = () => {
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+  const { token, isAuthenticated } = useSelector((state) => state.auth);
   const [socketInitialized, setSocketInitialized] = useState(false);
 
   useEffect(() => {
-    if (token && !socketInitialized) {
+    if (isAuthenticated && token && !socketInitialized) {
       const timeoutId = setTimeout(() => {
         initializeSocket(token);
         setSocketInitialized(true);
@@ -23,10 +23,12 @@ const Home = () => {
     }
     
     return () => {
-      disconnectSocket();
-      setSocketInitialized(false);
+      if (socketInitialized) {
+        disconnectSocket();
+        setSocketInitialized(false);
+      }
     };
-  }, [token, socketInitialized]);
+  }, [isAuthenticated, token, socketInitialized]);
 
   return (
     <Container fluid className="vh-100 d-flex flex-column p-0">

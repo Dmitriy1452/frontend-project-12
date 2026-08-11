@@ -9,7 +9,11 @@ export const fetchMessages = createAsyncThunk(
       const response = await messagesAPI.getAll();
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка загрузки сообщений');
+      const message = error.response?.data?.message 
+        || error.response?.data 
+        || error.message 
+        || 'Ошибка загрузки сообщений';
+      return rejectWithValue(typeof message === 'string' ? message : 'Ошибка загрузки сообщений');
     }
   }
 );
@@ -21,7 +25,11 @@ export const sendMessage = createAsyncThunk(
       const response = await messagesAPI.create(messageData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка отправки сообщения');
+      const message = error.response?.data?.message 
+        || error.response?.data 
+        || error.message 
+        || 'Ошибка отправки сообщения';
+      return rejectWithValue(typeof message === 'string' ? message : 'Ошибка отправки сообщения');
     }
   }
 );
@@ -65,7 +73,7 @@ const messagesSlice = createSlice({
       })
       .addCase(fetchMessages.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Ошибка загрузки сообщений';
       })
       .addCase(sendMessage.pending, (state) => {
         state.sendingMessage = true;
@@ -80,7 +88,7 @@ const messagesSlice = createSlice({
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.sendingMessage = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Ошибка отправки сообщения';
       });
   },
 });

@@ -1,6 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { channelsAPI } from '../../api';
 
+const extractErrorMessage = (error) => {
+  if (!error) return 'Ошибка загрузки каналов';
+  
+  if (typeof error === 'string') return error;
+  
+  if (error.message) return error.message;
+  
+  if (error.data) {
+    if (typeof error.data === 'string') return error.data;
+    if (error.data.message) return error.data.message;
+  }
+  
+  return 'Ошибка загрузки каналов';
+};
+
 export const fetchChannels = createAsyncThunk(
   'channels/fetchAll',
   async (_, { rejectWithValue }) => {
@@ -8,7 +23,11 @@ export const fetchChannels = createAsyncThunk(
       const response = await channelsAPI.getAll();
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка загрузки каналов');
+      const message = error.response?.data?.message 
+        || error.response?.data 
+        || error.message 
+        || 'Ошибка загрузки каналов';
+      return rejectWithValue(typeof message === 'string' ? message : 'Ошибка загрузки каналов');
     }
   }
 );
@@ -20,7 +39,11 @@ export const createChannel = createAsyncThunk(
       const response = await channelsAPI.create(channelData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка создания канала');
+      const message = error.response?.data?.message 
+        || error.response?.data 
+        || error.message 
+        || 'Ошибка создания канала';
+      return rejectWithValue(typeof message === 'string' ? message : 'Ошибка создания канала');
     }
   }
 );
@@ -32,7 +55,11 @@ export const updateChannel = createAsyncThunk(
       const response = await channelsAPI.update(id, data);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка обновления канала');
+      const message = error.response?.data?.message 
+        || error.response?.data 
+        || error.message 
+        || 'Ошибка обновления канала';
+      return rejectWithValue(typeof message === 'string' ? message : 'Ошибка обновления канала');
     }
   }
 );
@@ -44,7 +71,11 @@ export const deleteChannel = createAsyncThunk(
       await channelsAPI.delete(id);
       return id;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка удаления канала');
+      const message = error.response?.data?.message 
+        || error.response?.data 
+        || error.message 
+        || 'Ошибка удаления канала';
+      return rejectWithValue(typeof message === 'string' ? message : 'Ошибка удаления канала');
     }
   }
 );
@@ -108,7 +139,7 @@ const channelsSlice = createSlice({
       })
       .addCase(fetchChannels.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Ошибка загрузки каналов';
       })
       .addCase(createChannel.pending, (state) => {
         state.isCreating = true;
@@ -121,7 +152,7 @@ const channelsSlice = createSlice({
       })
       .addCase(createChannel.rejected, (state, action) => {
         state.isCreating = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Ошибка создания канала';
       })
       .addCase(updateChannel.pending, (state) => {
         state.isUpdating = true;
@@ -136,7 +167,7 @@ const channelsSlice = createSlice({
       })
       .addCase(updateChannel.rejected, (state, action) => {
         state.isUpdating = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Ошибка обновления канала';
       })
       .addCase(deleteChannel.pending, (state) => {
         state.isDeleting = true;
@@ -152,7 +183,7 @@ const channelsSlice = createSlice({
       })
       .addCase(deleteChannel.rejected, (state, action) => {
         state.isDeleting = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Ошибка удаления канала';
       });
   },
 });
