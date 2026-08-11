@@ -128,7 +128,11 @@ const Signup = () => {
                     <Button 
                       type="submit" 
                       className="auth-btn mb-3"
-                      disabled={isRegistering || isSubmitting || !isFormFilled}
+                      disabled={
+                        isRegistering || 
+                        isSubmitting || 
+                        !isFormFilled
+                      }
                     >
                       {(isRegistering || isSubmitting) ? (
                         <>
