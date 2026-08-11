@@ -83,74 +83,72 @@ const Signup = () => {
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ handleSubmit, isSubmitting, values, errors, touched, isValid, dirty }) => (
-                <Form onSubmit={handleSubmit} noValidate>
-                  <BSForm.Group className="mb-3">
-                    <BSForm.Label className="fw-semibold">Имя пользователя</BSForm.Label>
-                    <Field
-                      innerRef={inputRef}
-                      type="text"
-                      name="username"
-                      placeholder="Ваш ник"
-                      className={`form-control auth-input ${touched.username && errors.username ? 'is-invalid' : ''}`}
-                      disabled={isRegistering || isSubmitting}
-                    />
-                    <ErrorMessage name="username" component="div" className="invalid-feedback" />
-                  </BSForm.Group>
+              {({ handleSubmit, isSubmitting, values, errors, touched }) => {
+                const isFormFilled = values.username && values.password && values.confirmPassword;
+                
+                return (
+                  <Form onSubmit={handleSubmit} noValidate>
+                    <BSForm.Group className="mb-3">
+                      <BSForm.Label className="fw-semibold">Имя пользователя</BSForm.Label>
+                      <Field
+                        innerRef={inputRef}
+                        type="text"
+                        name="username"
+                        placeholder="Ваш ник"
+                        className={`form-control auth-input ${touched.username && errors.username ? 'is-invalid' : ''}`}
+                        disabled={isRegistering || isSubmitting}
+                      />
+                      <ErrorMessage name="username" component="div" className="invalid-feedback" />
+                    </BSForm.Group>
 
-                  <BSForm.Group className="mb-3">
-                    <BSForm.Label className="fw-semibold">Пароль</BSForm.Label>
-                    <Field
-                      type="password"
-                      name="password"
-                      placeholder="Пароль"
-                      className={`form-control auth-input ${touched.password && errors.password ? 'is-invalid' : ''}`}
-                      disabled={isRegistering || isSubmitting}
-                    />
-                    <ErrorMessage name="password" component="div" className="invalid-feedback" />
-                  </BSForm.Group>
+                    <BSForm.Group className="mb-3">
+                      <BSForm.Label className="fw-semibold">Пароль</BSForm.Label>
+                      <Field
+                        type="password"
+                        name="password"
+                        placeholder="Пароль"
+                        className={`form-control auth-input ${touched.password && errors.password ? 'is-invalid' : ''}`}
+                        disabled={isRegistering || isSubmitting}
+                      />
+                      <ErrorMessage name="password" component="div" className="invalid-feedback" />
+                    </BSForm.Group>
 
-                  <BSForm.Group className="mb-4">
-                    <BSForm.Label className="fw-semibold">Подтвердите пароль</BSForm.Label>
-                    <Field
-                      type="password"
-                      name="confirmPassword"
-                      placeholder="Подтвердите пароль"
-                      className={`form-control auth-input ${touched.confirmPassword && errors.confirmPassword ? 'is-invalid' : ''}`}
-                      disabled={isRegistering || isSubmitting}
-                    />
-                    <ErrorMessage name="confirmPassword" component="div" className="invalid-feedback" />
-                  </BSForm.Group>
+                    <BSForm.Group className="mb-4">
+                      <BSForm.Label className="fw-semibold">Подтвердите пароль</BSForm.Label>
+                      <Field
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Подтвердите пароль"
+                        className={`form-control auth-input ${touched.confirmPassword && errors.confirmPassword ? 'is-invalid' : ''}`}
+                        disabled={isRegistering || isSubmitting}
+                      />
+                      <ErrorMessage name="confirmPassword" component="div" className="invalid-feedback" />
+                    </BSForm.Group>
 
-                  <Button 
-                    type="submit" 
-                    className="auth-btn mb-3"
-                    disabled={
-                      isRegistering || 
-                      isSubmitting || 
-                      !values.username || 
-                      !values.password || 
-                      !values.confirmPassword
-                    }
-                  >
-                    {(isRegistering || isSubmitting) ? (
-                      <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Зарегистрироваться...
-                      </>
-                    ) : (
-                      'Зарегистрироваться'
-                    )}
-                  </Button>
+                    <Button 
+                      type="submit" 
+                      className="auth-btn mb-3"
+                      disabled={isRegistering || isSubmitting || !isFormFilled}
+                    >
+                      {(isRegistering || isSubmitting) ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Зарегистрироваться...
+                        </>
+                      ) : (
+                        'Зарегистрироваться'
+                      )}
+                    </Button>
 
-                  <div className="text-center">
-                    <span className="text-muted">Уже есть аккаунт? </span>
-                    <Link to="/login" className="auth-link">
-                      Войти
-                    </Link>
-                  </div>
-                </Form>
-              )}
+                    <div className="text-center">
+                      <span className="text-muted">Уже есть аккаунт? </span>
+                      <Link to="/login" className="auth-link">
+                        Войти
+                      </Link>
+                    </div>
+                  </Form>
+                );
+              }}
             </Formik>
           </div>
         </Col>
