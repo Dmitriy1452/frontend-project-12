@@ -78,12 +78,6 @@ const Signup = () => {
           <div className="auth-card">
             <h1 className="auth-title display-6">Регистрация</h1>
             
-            {error && !formik.errors.username && (
-              <Alert variant="danger" className="mb-3">
-                {typeof error === 'string' ? error : t('errors.signupFailed')}
-              </Alert>
-            )}
-
             <Form onSubmit={formik.handleSubmit} noValidate>
               <Form.Group className="mb-3">
                 <Form.Label htmlFor="username" className="fw-semibold">Имя пользователя</Form.Label>
@@ -96,12 +90,15 @@ const Signup = () => {
                   value={formik.values.username}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  isInvalid={formik.touched.username && !!formik.errors.username}
+                  isInvalid={formik.touched.username && (!!formik.errors.username || !!error)}
                   className="auth-input"
                   disabled={isRegistering || formik.isSubmitting}
                 />
                 {formik.touched.username && formik.errors.username && (
                   <div className="invalid-feedback d-block">{formik.errors.username}</div>
+                )}
+                {formik.touched.username && error && !formik.errors.username && (
+                  <div className="invalid-feedback d-block">{error}</div>
                 )}
               </Form.Group>
 

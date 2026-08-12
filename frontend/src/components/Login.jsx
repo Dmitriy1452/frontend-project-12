@@ -31,19 +31,6 @@ const Login = () => {
       username: '',
       password: '',
     },
-    validate: (values) => {
-      const errors = {};
-      
-      if (!values.username) {
-        errors.username = 'Введите имя пользователя';
-      }
-
-      if (!values.password) {
-        errors.password = 'Введите пароль';
-      }
-
-      return errors;
-    },
     onSubmit: async (values, { setSubmitting, setFieldError }) => {
       dispatch(clearError());
       
@@ -95,12 +82,6 @@ const Login = () => {
           <div className="auth-card">
             <h1 className="auth-title display-6">{t('app.title')}</h1>
             
-            {error && !formik.errors.username && (
-              <Alert variant="danger" className="mb-3">
-                {typeof error === 'string' ? error : 'Неверные имя пользователя или пароль'}
-              </Alert>
-            )}
-
             <Form onSubmit={formik.handleSubmit}>
               <Form.Group className="mb-3">
                 <Form.Label htmlFor="username" className="fw-semibold">Ваш ник</Form.Label>
@@ -112,14 +93,11 @@ const Login = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.username}
-                  isInvalid={formik.touched.username && (!!formik.errors.username || !!error)}
+                  isInvalid={formik.touched.username && !!error}
                   className="auth-input"
                   disabled={isLoading || formik.isSubmitting}
                 />
-                {formik.touched.username && formik.errors.username && (
-                  <div className="invalid-feedback d-block">{formik.errors.username}</div>
-                )}
-                {formik.touched.username && error && !formik.errors.username && (
+                {formik.touched.username && error && (
                   <div className="invalid-feedback d-block">{error}</div>
                 )}
               </Form.Group>
@@ -134,19 +112,15 @@ const Login = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.password}
-                  isInvalid={formik.touched.password && !!formik.errors.password}
                   className="auth-input"
                   disabled={isLoading || formik.isSubmitting}
                 />
-                {formik.touched.password && formik.errors.password && (
-                  <div className="error-text">{formik.errors.password}</div>
-                )}
               </Form.Group>
 
               <Button 
                 type="submit" 
                 className="auth-btn mb-3"
-                disabled={isLoading || formik.isSubmitting}
+                disabled={isLoading || formik.isSubmitting || !formik.values.username || !formik.values.password}
               >
                 {(isLoading || formik.isSubmitting) ? (
                   <>
