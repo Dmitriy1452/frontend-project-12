@@ -60,6 +60,7 @@ const Signup = () => {
         
         if (result) {
           showSuccess(t('auth.signupSuccess'));
+          navigate('/', { replace: true });
         }
       } catch (err) {
         const errorMessage = typeof err === 'string' ? err : t('auth.signupError');
@@ -85,8 +86,9 @@ const Signup = () => {
 
             <Form onSubmit={formik.handleSubmit} noValidate>
               <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Имя пользователя</Form.Label>
+                <Form.Label htmlFor="username" className="fw-semibold">Имя пользователя</Form.Label>
                 <Form.Control
+                  id="username"
                   ref={inputRef}
                   type="text"
                   name="username"
@@ -104,8 +106,9 @@ const Signup = () => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Пароль</Form.Label>
+                <Form.Label htmlFor="password" className="fw-semibold">Пароль</Form.Label>
                 <Form.Control
+                  id="password"
                   type="password"
                   name="password"
                   placeholder="Пароль"
@@ -122,8 +125,9 @@ const Signup = () => {
               </Form.Group>
 
               <Form.Group className="mb-4">
-                <Form.Label className="fw-semibold">Подтвердите пароль</Form.Label>
+                <Form.Label htmlFor="confirmPassword" className="fw-semibold">Подтвердите пароль</Form.Label>
                 <Form.Control
+                  id="confirmPassword"
                   type="password"
                   name="confirmPassword"
                   placeholder="Подтвердите пароль"
