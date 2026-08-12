@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,7 +13,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error, isAuthenticated } = useSelector((state) => state.auth);
-  const [submitError, setSubmitError] = useState(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,7 +23,6 @@ const Login = () => {
   useEffect(() => {
     return () => {
       dispatch(clearError());
-      setSubmitError(null);
     };
   }, [dispatch]);
 
@@ -52,7 +50,6 @@ const Login = () => {
     },
     onSubmit: async (values, { setSubmitting, setFieldError }) => {
       dispatch(clearError());
-      setSubmitError(null);
       
       try {
         const result = await dispatch(login({
@@ -65,10 +62,9 @@ const Login = () => {
           navigate('/', { replace: true });
         }
       } catch (err) {
-        console.log('Login error:', err);
         const errorMessage = typeof err === 'string' ? err : 'Неверные имя пользователя или пароль';
-        setSubmitError(errorMessage);
         showError(errorMessage);
+        setFieldError('username', errorMessage);
         setSubmitting(false);
       }
     },
@@ -96,8 +92,6 @@ const Login = () => {
     );
   }
 
-  const displayError = submitError || error || formik.errors.password;
-
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
       <Row className="w-100">
@@ -105,9 +99,9 @@ const Login = () => {
           <div className="auth-card">
             <h1 className="auth-title display-6">{t('app.title')}</h1>
             
-            {displayError && (
+            {error && !formik.errors.username && (
               <Alert variant="danger" className="mb-3">
-                {typeof displayError === 'string' ? displayError : 'Неверные имя пользователя или пароль'}
+                {typeof error === 'string' ? error : 'Неверные имя пользователя или пароль'}
               </Alert>
             )}
 
@@ -122,12 +116,15 @@ const Login = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.username}
-                  isInvalid={formik.touched.username && !!formik.errors.username}
+                  isInvalid={formik.touched.username && (!!formik.errors.username || !!error)}
                   className="auth-input"
                   disabled={isLoading || formik.isSubmitting}
                 />
                 {formik.touched.username && formik.errors.username && (
-                  <div className="error-text">{formik.errors.username}</div>
+                  <div className="invalid-feedback d-block">{formik.errors.username}</div>
+                )}
+                {formik.touched.username && error && !formik.errors.username && (
+                  <div className="invalid-feedback d-block">{error}</div>
                 )}
               </Form.Group>
 
