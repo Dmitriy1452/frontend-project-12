@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error, isAuthenticated } = useSelector((state) => state.auth);
+  const [submitError, setSubmitError] = useState(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -23,6 +24,7 @@ const Login = () => {
   useEffect(() => {
     return () => {
       dispatch(clearError());
+      setSubmitError(null);
     };
   }, [dispatch]);
 
@@ -50,15 +52,23 @@ const Login = () => {
     },
     onSubmit: async (values, { setSubmitting, setFieldError }) => {
       dispatch(clearError());
+      setSubmitError(null);
       
       try {
-        const result = await dispatch(login(values)).unwrap();
-        showSuccess(t('auth.loginSuccess', { username: result.username }));
-        navigate('/', { replace: true });
+        const result = await dispatch(login({
+          username: values.username,
+          password: values.password,
+        })).unwrap();
+        
+        if (result) {
+          showSuccess(t('auth.loginSuccess', { username: result.username }));
+          navigate('/', { replace: true });
+        }
       } catch (err) {
-        const errorMessage = typeof err === 'string' ? err : t('auth.loginError');
+        console.log('Login error:', err);
+        const errorMessage = typeof err === 'string' ? err : 'Неверные имя пользователя или пароль';
+        setSubmitError(errorMessage);
         showError(errorMessage);
-        setFieldError('password', errorMessage);
         setSubmitting(false);
       }
     },
@@ -86,7 +96,7 @@ const Login = () => {
     );
   }
 
-  const displayError = error || formik.errors.password;
+  const displayError = submitError || error || formik.errors.password;
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
@@ -97,7 +107,7 @@ const Login = () => {
             
             {displayError && (
               <Alert variant="danger" className="mb-3">
-                {typeof displayError === 'string' ? displayError : t('auth.loginError')}
+                {typeof displayError === 'string' ? displayError : 'Неверные имя пользователя или пароль'}
               </Alert>
             )}
 
@@ -143,7 +153,7 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="auth-btn mb-3"
-                disabled={isLoading || formik.isSubmitting || !formik.values.username || !formik.values.password}
+                disabled={isLoading || formik.isSubmitting}
               >
                 {(isLoading || formik.isSubmitting) ? (
                   <>
