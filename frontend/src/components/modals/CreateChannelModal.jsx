@@ -44,7 +44,7 @@ const CreateChannelModal = ({ show, onHide }) => {
       .required(t('channels.channelNameRequired')),
   });
 
-  const handleSubmit = async (values, { resetForm, setFieldValue }) => {
+  const handleSubmit = async (values, { resetForm, setFieldValue, setSubmitting }) => {
     try {
       const validation = validateChannelName(values.name);
       
@@ -65,6 +65,8 @@ const CreateChannelModal = ({ show, onHide }) => {
       onHide();
     } catch (err) {
       showError(t('channels.createError'));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -77,6 +79,8 @@ const CreateChannelModal = ({ show, onHide }) => {
         initialValues={{ name: '' }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
+        validateOnChange={true}
+        validateOnBlur={true}
       >
         {({ handleSubmit, isSubmitting, values, errors, touched, isValid, setFieldValue }) => (
           <FormikForm onSubmit={handleSubmit}>
@@ -111,9 +115,9 @@ const CreateChannelModal = ({ show, onHide }) => {
               <Button 
                 type="submit" 
                 variant="primary" 
-                disabled={isCreating || !isValid || !values.name}
+                disabled={isCreating || isSubmitting}
               >
-                {isCreating ? `${t('channels.createButton')}...` : t('channels.createButton')}
+                {isCreating || isSubmitting ? `${t('channels.createButton')}...` : t('channels.createButton')}
               </Button>
             </Modal.Footer>
           </FormikForm>
