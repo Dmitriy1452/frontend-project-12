@@ -25,7 +25,7 @@ const CreateChannelModal = ({ show, onHide }) => {
     name: Yup.string()
       .min(3, t('channels.channelNameMin'))
       .max(20, t('channels.channelNameMax'))
-      .matches(/^[a-zA-Z0-9а-яА-Я_-]+$/, t('channels.channelNameInvalid'))
+      .matches(/^[a-zA-Z0-9а-яА-Я_\s-]+$/, t('channels.channelNameInvalid'))
       .notOneOf(
         channels.map(ch => ch.name),
         t('channels.channelExists')
