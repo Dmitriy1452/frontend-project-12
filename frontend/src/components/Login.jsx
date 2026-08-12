@@ -46,7 +46,6 @@ const Login = () => {
         }
       } catch (err) {
         const errorMessage = typeof err === 'string' ? err : 'Неверные имя пользователя или пароль';
-        showError(errorMessage);
         setFieldError('username', errorMessage);
         setSubmitting(false);
       }
