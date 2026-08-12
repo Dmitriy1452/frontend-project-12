@@ -51,14 +51,12 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting, setFieldError }) => {
       dispatch(clearError());
       
-      const actionResult = await dispatch(login(values));
-      
-      if (login.fulfilled.match(actionResult)) {
-        const user = actionResult.payload;
-        showSuccess(t('auth.loginSuccess', { username: user.username }));
+      try {
+        const result = await dispatch(login(values)).unwrap();
+        showSuccess(t('auth.loginSuccess', { username: result.username }));
         navigate('/', { replace: true });
-      } else if (login.rejected.match(actionResult)) {
-        const errorMessage = actionResult.payload || t('auth.loginError');
+      } catch (err) {
+        const errorMessage = typeof err === 'string' ? err : t('auth.loginError');
         showError(errorMessage);
         setFieldError('password', errorMessage);
         setSubmitting(false);
@@ -88,6 +86,8 @@ const Login = () => {
     );
   }
 
+  const displayError = error || formik.errors.password;
+
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
       <Row className="w-100">
@@ -95,9 +95,9 @@ const Login = () => {
           <div className="auth-card">
             <h1 className="auth-title display-6">{t('app.title')}</h1>
             
-            {error && !formik.errors.password && (
+            {displayError && (
               <Alert variant="danger" className="mb-3">
-                {typeof error === 'string' ? error : t('auth.loginError')}
+                {typeof displayError === 'string' ? displayError : t('auth.loginError')}
               </Alert>
             )}
 
