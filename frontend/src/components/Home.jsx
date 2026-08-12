@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container } from 'react-bootstrap';
+import { Navigate } from 'react-router-dom';
+import { Container, Spinner } from 'react-bootstrap';
 import { initializeSocket, disconnectSocket } from '../socket/socket';
 import Chat from './Chat';
 import ErrorBoundary from './ErrorBoundary';
@@ -29,6 +30,10 @@ const Home = () => {
       }
     };
   }, [isAuthenticated, token, socketInitialized]);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <Container fluid className="vh-100 d-flex flex-column p-0">
