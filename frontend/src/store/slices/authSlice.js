@@ -12,7 +12,7 @@ const extractErrorMessage = (error, defaultMessage) => {
     }
     
     if (status === 409) {
-      return 'Пользователь с таким именем уже существует';
+      return 'Такой пользователь уже существует';
     }
     
     if (data) {
