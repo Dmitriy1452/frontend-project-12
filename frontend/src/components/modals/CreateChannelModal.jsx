@@ -87,9 +87,10 @@ const CreateChannelModal = ({ show, onHide }) => {
                 </Alert>
               )}
               <Form.Group controlId="channelName">
-                <Form.Label>Имя канала</Form.Label>
+                <Form.Label htmlFor="channelNameInput">Имя канала</Form.Label>
                 <Field
                   innerRef={inputRef}
+                  id="channelNameInput"
                   type="text"
                   name="name"
                   className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
