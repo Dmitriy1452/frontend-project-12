@@ -36,8 +36,10 @@ export const login = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authAPI.login(credentials);
+      console.log('Login response:', response.data);
       return response.data;
     } catch (error) {
+      console.error('Login error:', error);
       return rejectWithValue(extractErrorMessage(error, 'Ошибка авторизации'));
     }
   }
@@ -48,8 +50,10 @@ export const signup = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await authAPI.signup(userData);
+      console.log('Signup response:', response.data);
       return response.data;
     } catch (error) {
+      console.error('Signup error:', error);
       return rejectWithValue(extractErrorMessage(error, 'Ошибка регистрации'));
     }
   }
@@ -96,6 +100,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
+        console.log('Login fulfilled:', action.payload);
         state.isLoading = false;
         state.token = action.payload.token;
         state.username = action.payload.username;
@@ -105,15 +110,18 @@ const authSlice = createSlice({
         localStorage.setItem('username', action.payload.username);
       })
       .addCase(login.rejected, (state, action) => {
+        console.log('Login rejected:', action.payload);
         state.isLoading = false;
         state.error = action.payload || 'Ошибка авторизации';
         state.isAuthenticated = false;
       })
       .addCase(signup.pending, (state) => {
+        console.log('Signup pending');
         state.isRegistering = true;
         state.error = null;
       })
       .addCase(signup.fulfilled, (state, action) => {
+        console.log('Signup fulfilled:', action.payload);
         state.isRegistering = false;
         state.token = action.payload.token;
         state.username = action.payload.username;
@@ -121,8 +129,10 @@ const authSlice = createSlice({
         state.error = null;
         localStorage.setItem('token', action.payload.token);
         localStorage.setItem('username', action.payload.username);
+        console.log('State after signup:', state);
       })
       .addCase(signup.rejected, (state, action) => {
+        console.log('Signup rejected:', action.payload);
         state.isRegistering = false;
         state.error = action.payload || 'Ошибка регистрации';
         state.isAuthenticated = false;
