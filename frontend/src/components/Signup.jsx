@@ -66,11 +66,32 @@ const Signup = () => {
         const errorMessage = typeof err === 'string' ? err : t('auth.signupError');
         showError(errorMessage);
         setFieldError('username', errorMessage);
-      } finally {
         setSubmitting(false);
       }
     },
   });
+
+  if (isAuthenticated) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center min-vh-100">
+        <Row className="w-100">
+          <Col xs={12} sm={10} md={8} lg={6} className="mx-auto">
+            <div className="auth-card text-center">
+              <h1 className="auth-title display-6">Регистрация</h1>
+              <div className="alert alert-success">
+                Регистрация прошла успешно!
+              </div>
+              <Link to="/">
+                <Button className="auth-btn">
+                  Перейти в чат
+                </Button>
+              </Link>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">

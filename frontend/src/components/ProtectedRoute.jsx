@@ -15,6 +15,9 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (error) {
+    if (error === 'Unauthorized' || error.includes('auth')) {
+      return <Navigate to="/login" replace />;
+    }
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
         <div className="alert alert-danger">
