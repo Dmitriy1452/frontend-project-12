@@ -83,6 +83,7 @@ const MessageForm = ({ currentChannelId }) => {
             value={message}
             onChange={handleMessageChange}
             disabled={sendingMessage}
+            aria-label="Новое сообщение"
             style={{
               borderRadius: '20px 0 0 20px',
               border: '1px solid #dee2e6',

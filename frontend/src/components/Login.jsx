@@ -143,7 +143,7 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="auth-btn mb-3"
-                disabled={isLoading || formik.isSubmitting}
+                disabled={isLoading || formik.isSubmitting || !formik.values.username || !formik.values.password}
               >
                 {(isLoading || formik.isSubmitting) ? (
                   <>

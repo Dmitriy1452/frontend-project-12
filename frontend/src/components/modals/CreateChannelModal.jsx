@@ -87,7 +87,7 @@ const CreateChannelModal = ({ show, onHide }) => {
                 </Alert>
               )}
               <Form.Group controlId="channelName">
-                <Form.Label>{t('channels.channelName')}</Form.Label>
+                <Form.Label>Имя канала</Form.Label>
                 <Field
                   innerRef={inputRef}
                   type="text"

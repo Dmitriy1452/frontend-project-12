@@ -77,9 +77,9 @@ const ChannelsList = ({ channels, currentChannelId }) => {
           variant="primary" 
           size="sm" 
           onClick={() => setShowCreateModal(true)}
-          style={{ borderRadius: '50%', width: '32px', height: '32px', padding: '0' }}
+          style={{ borderRadius: '50%', width: '32px', height: '32px', padding: '0', fontSize: '18px', lineHeight: '1' }}
         >
-          <span style={{ fontSize: '18px', lineHeight: '1' }}>+</span>
+          +
         </Button>
       </div>
 

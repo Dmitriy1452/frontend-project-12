@@ -22,7 +22,7 @@ const Header = () => {
     <Navbar bg="white" className="border-bottom shadow-sm py-2">
       <Container fluid>
         <Navbar.Brand as={Link} to="/" className="fw-bold text-primary fs-4">
-          {t('app.title')}
+          Hexlet Chat
         </Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
