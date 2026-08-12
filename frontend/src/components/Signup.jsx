@@ -49,7 +49,7 @@ const Signup = () => {
       confirmPassword: '',
     },
     validationSchema,
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting, setFieldError }) => {
       dispatch(clearError());
       
       try {
@@ -63,7 +63,9 @@ const Signup = () => {
           navigate('/');
         }
       } catch (err) {
-        showError(err || t('auth.signupError'));
+        const errorMessage = typeof err === 'string' ? err : t('auth.signupError');
+        showError(errorMessage);
+        setFieldError('username', errorMessage);
         setSubmitting(false);
       }
     },
