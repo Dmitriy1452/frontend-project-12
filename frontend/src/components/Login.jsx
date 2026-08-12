@@ -16,7 +16,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -56,7 +56,7 @@ const Login = () => {
       if (login.fulfilled.match(actionResult)) {
         const user = actionResult.payload;
         showSuccess(t('auth.loginSuccess', { username: user.username }));
-        navigate('/');
+        navigate('/', { replace: true });
       } else if (login.rejected.match(actionResult)) {
         const errorMessage = actionResult.payload || t('auth.loginError');
         showError(errorMessage);

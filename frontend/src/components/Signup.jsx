@@ -24,7 +24,7 @@ const Signup = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -60,12 +60,13 @@ const Signup = () => {
         
         if (result) {
           showSuccess(t('auth.signupSuccess'));
-          navigate('/');
+          navigate('/', { replace: true });
         }
       } catch (err) {
         const errorMessage = typeof err === 'string' ? err : t('auth.signupError');
         showError(errorMessage);
         setFieldError('username', errorMessage);
+      } finally {
         setSubmitting(false);
       }
     },
