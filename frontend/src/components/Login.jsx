@@ -35,15 +35,11 @@ const Login = () => {
       const errors = {};
       
       if (!values.username) {
-        errors.username = t('errors.usernameRequired');
-      } else if (values.username.length < 3) {
-        errors.username = t('errors.usernameMin');
+        errors.username = 'Введите имя пользователя';
       }
 
       if (!values.password) {
-        errors.password = t('errors.passwordRequired');
-      } else if (values.password.length < 6) {
-        errors.password = t('errors.passwordMin');
+        errors.password = 'Введите пароль';
       }
 
       return errors;
