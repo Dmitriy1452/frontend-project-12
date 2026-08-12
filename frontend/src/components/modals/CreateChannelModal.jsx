@@ -30,34 +30,16 @@ const CreateChannelModal = ({ show, onHide }) => {
         channels.map(ch => ch.name),
         t('channels.channelExists')
       )
-      .test('profanity', t('channels.channelNameProfanity'), function(value) {
-        if (!value) return true;
-        const validation = validateChannelName(value);
-        if (!validation.isValid) {
-          return this.createError({
-            message: validation.message,
-            path: 'name',
-          });
-        }
-        return true;
-      })
       .required(t('channels.channelNameRequired')),
   });
 
   const handleSubmit = async (values, { resetForm, setFieldValue, setSubmitting }) => {
     try {
-      const validation = validateChannelName(values.name);
-      
-      if (!validation.isValid) {
-        showWarning(t('toasts.profanityDetected'));
-        if (validation.filtered) {
-          setFieldValue('name', validation.filtered);
-          return;
-        }
-        return;
-      }
-
       const filteredName = filterProfanity(values.name);
+      
+      if (filteredName !== values.name) {
+        showWarning(t('toasts.profanityDetected'));
+      }
       
       const result = await dispatch(createChannel({ name: filteredName })).unwrap();
       showSuccess(t('channels.createSuccess', { name: filteredName }));

@@ -6,6 +6,7 @@ if (!filter) {
 
 try {
   filter.loadDictionary('ru');
+  filter.add(['boobs', 'boob', 'tits', 'tit', 'dick', 'pussy', 'fuck', 'shit', 'ass', 'bitch']);
 } catch (error) {
   console.warn('Failed to load Russian dictionary:', error);
 }
