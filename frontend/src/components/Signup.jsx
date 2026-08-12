@@ -71,8 +71,6 @@ const Signup = () => {
     },
   });
 
-  const errorText = error || formik.errors.username;
-
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
       <Row className="w-100">
@@ -80,9 +78,9 @@ const Signup = () => {
           <div className="auth-card">
             <h1 className="auth-title display-6">Регистрация</h1>
             
-            {errorText && (
+            {error && !formik.errors.username && (
               <Alert variant="danger" className="mb-3">
-                {typeof errorText === 'string' ? errorText : 'Ошибка регистрации'}
+                {typeof error === 'string' ? error : t('errors.signupFailed')}
               </Alert>
             )}
 
@@ -98,15 +96,12 @@ const Signup = () => {
                   value={formik.values.username}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  isInvalid={formik.touched.username && (!!formik.errors.username || !!error)}
+                  isInvalid={formik.touched.username && !!formik.errors.username}
                   className="auth-input"
                   disabled={isRegistering || formik.isSubmitting}
                 />
                 {formik.touched.username && formik.errors.username && (
                   <div className="invalid-feedback d-block">{formik.errors.username}</div>
-                )}
-                {formik.touched.username && error && !formik.errors.username && (
-                  <div className="invalid-feedback d-block">{error}</div>
                 )}
               </Form.Group>
 

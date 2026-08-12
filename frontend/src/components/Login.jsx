@@ -95,9 +95,9 @@ const Login = () => {
           <div className="auth-card">
             <h1 className="auth-title display-6">{t('app.title')}</h1>
             
-            {(error || formik.errors.password) && (
+            {error && !formik.errors.password && (
               <Alert variant="danger" className="mb-3">
-                {error || formik.errors.password}
+                {typeof error === 'string' ? error : t('auth.loginError')}
               </Alert>
             )}
 
