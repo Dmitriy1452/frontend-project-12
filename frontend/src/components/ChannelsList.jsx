@@ -55,14 +55,14 @@ const ChannelsList = ({ channels, currentChannelId }) => {
             onClick={() => handleRenameClick(channel)}
             className="border-0"
           >
-            {t('channels.renameTitle')}
+            Переименовать
           </ListGroup.Item>
           <ListGroup.Item 
             action 
             onClick={() => handleDeleteClick(channel)}
             className="border-0 text-danger"
           >
-            {t('channels.deleteTitle')}
+            Удалить
           </ListGroup.Item>
         </ListGroup>
       </Popover.Body>
@@ -103,33 +103,55 @@ const ChannelsList = ({ channels, currentChannelId }) => {
               <span>{t('channels.channelPrefix')} {channel.name}</span>
               
               {isRemovable(channel) && (
-                <OverlayTrigger
-                  trigger="click"
-                  placement="bottom-end"
-                  rootClose
-                  overlay={renderMenuPopover(channel)}
-                  show={activeMenu === channel.id}
-                  onToggle={() => setActiveMenu(activeMenu === channel.id ? null : channel.id)}
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="p-0 text-secondary"
+                  style={{ textDecoration: 'none' }}
+                  aria-label="Управление каналом"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveMenu(activeMenu === channel.id ? null : channel.id);
+                  }}
                 >
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="p-0 text-secondary"
-                    style={{ textDecoration: 'none' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveMenu(activeMenu === channel.id ? null : channel.id);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <circle cx="8" cy="3" r="1.5" />
-                      <circle cx="8" cy="8" r="1.5" />
-                      <circle cx="8" cy="13" r="1.5" />
-                    </svg>
-                  </Button>
-                </OverlayTrigger>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <circle cx="8" cy="3" r="1.5" />
+                    <circle cx="8" cy="8" r="1.5" />
+                    <circle cx="8" cy="13" r="1.5" />
+                  </svg>
+                </Button>
               )}
             </ListGroup.Item>
+            
+            {isRemovable(channel) && activeMenu === channel.id && (
+              <div 
+                className="position-absolute bg-white border rounded shadow-sm"
+                style={{ 
+                  right: '10px', 
+                  top: '100%', 
+                  zIndex: 1000, 
+                  minWidth: '150px',
+                  marginTop: '4px'
+                }}
+              >
+                <ListGroup variant="flush">
+                  <ListGroup.Item 
+                    action 
+                    onClick={() => handleRenameClick(channel)}
+                    className="border-0"
+                  >
+                    Переименовать
+                  </ListGroup.Item>
+                  <ListGroup.Item 
+                    action 
+                    onClick={() => handleDeleteClick(channel)}
+                    className="border-0 text-danger"
+                  >
+                    Удалить
+                  </ListGroup.Item>
+                </ListGroup>
+              </div>
+            )}
           </div>
         ))}
       </ListGroup>
