@@ -72,7 +72,7 @@ const RenameChannelModal = ({ show, onHide, channel }) => {
             </Alert>
           )}
           <Form.Group controlId="channelName">
-            <Form.Label>Новое название канала</Form.Label>
+            <Form.Label>Имя канала</Form.Label>
             <Form.Control
               ref={inputRef}
               type="text"
