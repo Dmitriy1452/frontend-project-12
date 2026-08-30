@@ -2,11 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Formik, Form as FormikForm, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 import { Modal, Button, Alert, Form } from 'react-bootstrap';
 import { createChannel } from '../../store/slices/channelsSlice';
 import useToast from '../../hooks/useToast';
-import { validateChannelName, filterProfanity } from '../../utils/profanityFilter';
+import { filterProfanity } from '../../utils/profanityFilter';
+import { createChannelValidationSchema } from '../../utils/validationSchemas';
 
 const CreateChannelModal = ({ show, onHide }) => {
   const { t } = useTranslation();
@@ -21,17 +21,7 @@ const CreateChannelModal = ({ show, onHide }) => {
     }
   }, [show]);
 
-  const validationSchema = Yup.object({
-    name: Yup.string()
-      .min(3, t('channels.channelNameMin'))
-      .max(20, t('channels.channelNameMax'))
-      .matches(/^[a-zA-Z0-9а-яА-Я_\s-]+$/, t('channels.channelNameInvalid'))
-      .notOneOf(
-        channels.map(ch => ch.name),
-        t('channels.channelExists')
-      )
-      .required(t('channels.channelNameRequired')),
-  });
+  const validationSchema = createChannelValidationSchema(channels);
 
   const handleSubmit = async (values, { resetForm, setFieldValue, setSubmitting }) => {
     try {
@@ -73,7 +63,7 @@ const CreateChannelModal = ({ show, onHide }) => {
                 </Alert>
               )}
               <Form.Group controlId="channelName">
-                <Form.Label htmlFor="channelNameInput">Имя канала</Form.Label>
+                <Form.Label htmlFor="channelNameInput">{t('channels.channelName')}</Form.Label>
                 <Field
                   innerRef={inputRef}
                   id="channelNameInput"

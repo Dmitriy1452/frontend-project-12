@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import { signup, clearError } from '../store/slices/authSlice';
 import useToast from '../hooks/useToast';
+import { signupValidationSchema } from '../utils/validationSchemas';
 
 const Signup = () => {
   const { t } = useTranslation();
@@ -28,19 +28,26 @@ const Signup = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const validationSchema = Yup.object({
-    username: Yup.string()
-      .min(3, t('errors.usernameMin'))
-      .max(20, t('errors.usernameMax'))
-      .matches(/^[a-zA-Z0-9а-яА-Я_-]+$/, t('errors.usernameInvalid'))
-      .required(t('errors.usernameRequired')),
-    password: Yup.string()
-      .min(6, t('errors.passwordMin'))
-      .required(t('errors.passwordRequired')),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password'), null], t('errors.passwordMatch'))
-      .required(t('errors.confirmPasswordRequired')),
-  });
+  const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
+    dispatch(clearError());
+    
+    try {
+      const result = await dispatch(signup({
+        username: values.username,
+        password: values.password,
+      })).unwrap();
+      
+      if (result) {
+        showSuccess(t('auth.signupSuccess'));
+        navigate('/', { replace: true });
+      }
+    } catch (err) {
+      const errorMessage = typeof err === 'string' ? err : t('auth.signupError');
+      showError(errorMessage);
+      setFieldError('username', errorMessage);
+      setSubmitting(false);
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -48,27 +55,8 @@ const Signup = () => {
       password: '',
       confirmPassword: '',
     },
-    validationSchema,
-    onSubmit: async (values, { setSubmitting, setFieldError }) => {
-      dispatch(clearError());
-      
-      try {
-        const result = await dispatch(signup({
-          username: values.username,
-          password: values.password,
-        })).unwrap();
-        
-        if (result) {
-          showSuccess(t('auth.signupSuccess'));
-          navigate('/', { replace: true });
-        }
-      } catch (err) {
-        const errorMessage = typeof err === 'string' ? err : t('auth.signupError');
-        showError(errorMessage);
-        setFieldError('username', errorMessage);
-        setSubmitting(false);
-      }
-    },
+    validationSchema: signupValidationSchema,
+    onSubmit: handleSubmit,
   });
 
   return (
@@ -76,17 +64,17 @@ const Signup = () => {
       <Row className="w-100">
         <Col xs={12} sm={10} md={8} lg={6} className="mx-auto">
           <div className="auth-card">
-            <h1 className="auth-title display-6">Регистрация</h1>
+            <h1 className="auth-title display-6">{t('auth.signupTitle')}</h1>
             
             <Form onSubmit={formik.handleSubmit} noValidate>
               <Form.Group className="mb-3">
-                <Form.Label htmlFor="username" className="fw-semibold">Имя пользователя</Form.Label>
+                <Form.Label htmlFor="username" className="fw-semibold">{t('auth.username')}</Form.Label>
                 <Form.Control
                   id="username"
                   ref={inputRef}
                   type="text"
                   name="username"
-                  placeholder="Ваш ник"
+                  placeholder={t('auth.usernamePlaceholder')}
                   value={formik.values.username}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -103,12 +91,12 @@ const Signup = () => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label htmlFor="password" className="fw-semibold">Пароль</Form.Label>
+                <Form.Label htmlFor="password" className="fw-semibold">{t('auth.password')}</Form.Label>
                 <Form.Control
                   id="password"
                   type="password"
                   name="password"
-                  placeholder="Пароль"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -122,12 +110,12 @@ const Signup = () => {
               </Form.Group>
 
               <Form.Group className="mb-4">
-                <Form.Label htmlFor="confirmPassword" className="fw-semibold">Подтвердите пароль</Form.Label>
+                <Form.Label htmlFor="confirmPassword" className="fw-semibold">{t('auth.confirmPassword')}</Form.Label>
                 <Form.Control
                   id="confirmPassword"
                   type="password"
                   name="confirmPassword"
-                  placeholder="Подтвердите пароль"
+                  placeholder={t('auth.confirmPasswordPlaceholder')}
                   value={formik.values.confirmPassword}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -148,17 +136,17 @@ const Signup = () => {
                 {(isRegistering || formik.isSubmitting) ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Зарегистрироваться...
+                    {t('auth.signupButton')}...
                   </>
                 ) : (
-                  'Зарегистрироваться'
+                  t('auth.signupButton')
                 )}
               </Button>
 
               <div className="text-center">
-                <span className="text-muted">Уже есть аккаунт? </span>
+                <span className="text-muted">{t('auth.haveAccount')} </span>
                 <Link to="/login" className="auth-link">
-                  Войти
+                  {t('app.login')}
                 </Link>
               </div>
             </Form>

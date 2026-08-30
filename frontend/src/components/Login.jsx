@@ -26,30 +26,32 @@ const Login = () => {
     };
   }, [dispatch]);
 
+  const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
+    dispatch(clearError());
+    
+    try {
+      const result = await dispatch(login({
+        username: values.username,
+        password: values.password,
+      })).unwrap();
+      
+      if (result) {
+        showSuccess(t('auth.loginSuccess', { username: result.username }));
+        navigate('/', { replace: true });
+      }
+    } catch (err) {
+      const errorMessage = typeof err === 'string' ? err : t('auth.loginError');
+      setFieldError('username', errorMessage);
+      setSubmitting(false);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       username: '',
       password: '',
     },
-    onSubmit: async (values, { setSubmitting, setFieldError }) => {
-      dispatch(clearError());
-      
-      try {
-        const result = await dispatch(login({
-          username: values.username,
-          password: values.password,
-        })).unwrap();
-        
-        if (result) {
-          showSuccess(t('auth.loginSuccess', { username: result.username }));
-          navigate('/', { replace: true });
-        }
-      } catch (err) {
-        const errorMessage = typeof err === 'string' ? err : 'Неверные имя пользователя или пароль';
-        setFieldError('username', errorMessage);
-        setSubmitting(false);
-      }
-    },
+    onSubmit: handleSubmit,
   });
 
   if (isAuthenticated) {
@@ -83,12 +85,12 @@ const Login = () => {
             
             <Form onSubmit={formik.handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label htmlFor="username" className="fw-semibold">Ваш ник</Form.Label>
+                <Form.Label htmlFor="username" className="fw-semibold">{t('auth.username')}</Form.Label>
                 <Form.Control
                   id="username"
                   name="username"
                   type="text"
-                  placeholder="Ваш ник"
+                  placeholder={t('auth.usernamePlaceholder')}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.username}
@@ -102,12 +104,12 @@ const Login = () => {
               </Form.Group>
 
               <Form.Group className="mb-4">
-                <Form.Label htmlFor="password" className="fw-semibold">Пароль</Form.Label>
+                <Form.Label htmlFor="password" className="fw-semibold">{t('auth.password')}</Form.Label>
                 <Form.Control
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="Пароль"
+                  placeholder={t('auth.passwordPlaceholder')}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.password}
