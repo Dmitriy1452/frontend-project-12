@@ -1,5 +1,2 @@
-const init = async (socket) => {
-  return null;
-};
-
+import init from '../../frontend/src/init';
 export default init;
