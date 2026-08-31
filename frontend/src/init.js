@@ -1,5 +1,4 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
@@ -9,13 +8,8 @@ import App from './App';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const init = (socket) => {
-  const container = document.createElement('div');
-  container.id = 'root';
-  document.body.appendChild(container);
-
-  const root = createRoot(container);
-  root.render(
+const init = async (socket) => {
+  return (
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
         <BrowserRouter>
@@ -24,18 +18,6 @@ const init = (socket) => {
       </I18nextProvider>
     </Provider>
   );
-
-  return {
-    container,
-    root,
-    cleanup: () => {
-      root.unmount();
-      if (container.parentNode) {
-        container.parentNode.removeChild(container);
-      }
-    },
-    getContainer: () => container,
-  };
 };
 
 export default init;
