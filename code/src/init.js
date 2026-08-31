@@ -3,10 +3,10 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
-import { store } from './store';
-import i18n from './i18n';
-import App from './App';
-import './App.css';
+import { store } from '../../frontend/src/store/index';
+import i18n from '../../frontend/src/i18n';
+import App from '../../frontend/src/App';
+import '../../frontend/src/App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const init = (socket) => {
