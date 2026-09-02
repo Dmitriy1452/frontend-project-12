@@ -27,30 +27,24 @@ export const initializeSocket = (token) => {
   });
 
   socketInstance.on('connect', () => {
-    console.log('✅ Socket connected successfully');
     isConnecting = false;
     connectionAttempts = 0;
   });
 
   socketInstance.on('connect_error', (error) => {
-    console.error('❌ Socket connection error:', error.message);
     connectionAttempts++;
-    
     if (connectionAttempts >= MAX_ATTEMPTS) {
-      console.warn('Max connection attempts reached');
       isConnecting = false;
     }
   });
 
   socketInstance.on('disconnect', (reason) => {
-    console.log('🔌 Socket disconnected:', reason);
     if (reason === 'io server disconnect') {
       socketInstance.connect();
     }
   });
 
   socketInstance.io.on('reconnect', () => {
-    console.log('🔄 Socket reconnected');
     connectionAttempts = 0;
   });
 
@@ -74,7 +68,6 @@ export const disconnectSocket = () => {
     socketInstance = null;
     isConnecting = false;
     connectionAttempts = 0;
-    console.log('🔌 Socket disconnected manually');
   }
 };
 

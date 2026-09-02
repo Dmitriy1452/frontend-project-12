@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { getSocket } from '../socket/socket';
 import { 
-  fetchChannels,
-  addChannel,
-  removeChannel,
-  renameChannel
+  fetchChannels, 
+  addChannel, 
+  removeChannel, 
+  renameChannel 
 } from '../store/slices/channelsSlice';
 import { fetchMessages, addMessage } from '../store/slices/messagesSlice';
 import ChannelsList from './ChannelsList';
@@ -18,8 +18,23 @@ const Chat = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const { items: channels, currentChannelId, isLoading: channelsLoading, error: channelsError } = useSelector((state) => state.channels);
-  const { items: messages, isLoading: messagesLoading, error: messagesError } = useSelector((state) => state.messages);
+  const { 
+    items: channels, 
+    currentChannelId, 
+    isLoading: channelsLoading, 
+    error: channelsError 
+  } = useSelector((state) => state.channels);
+  const { 
+    items: messages, 
+    isLoading: messagesLoading, 
+    error: messagesError 
+  } = useSelector((state) => state.messages);
+
+  const channelsRef = useRef(channels);
+  
+  useEffect(() => {
+    channelsRef.current = channels;
+  }, [channels]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -29,47 +44,47 @@ const Chat = () => {
   }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
-  if (!isAuthenticated) return;
+    if (!isAuthenticated) return;
 
-  let socket;
-  try {
-    socket = getSocket();
-  } catch (e) {
-    console.warn('Socket not ready');
-    return;
-  }
-
-  const handleNewMessage = (message) => {
-    dispatch(addMessage(message));
-  };
-
-  const handleNewChannel = (channel) => {
-    const exists = channels.some(ch => ch.id === channel.id);
-    if (!exists) {
-      dispatch(addChannel(channel));
+    let socket;
+    try {
+      socket = getSocket();
+    } catch (e) {
+      console.warn('Socket not ready');
+      return;
     }
-  };
 
-  const handleRenameChannel = (channel) => {
-    dispatch(renameChannel(channel));
-  };
+    const handleNewMessage = (message) => {
+      dispatch(addMessage(message));
+    };
 
-  const handleRemoveChannel = (channelId) => {
-    dispatch(removeChannel(channelId));
-  };
+    const handleNewChannel = (channel) => {
+      const exists = channelsRef.current.some(ch => ch.id === channel.id);
+      if (!exists) {
+        dispatch(addChannel(channel));
+      }
+    };
 
-  socket.on('newMessage', handleNewMessage);
-  socket.on('newChannel', handleNewChannel);
-  socket.on('renameChannel', handleRenameChannel);
-  socket.on('removeChannel', handleRemoveChannel);
+    const handleRenameChannel = (channel) => {
+      dispatch(renameChannel(channel));
+    };
 
-  return () => {
-    socket.off('newMessage', handleNewMessage);
-    socket.off('newChannel', handleNewChannel);
-    socket.off('renameChannel', handleRenameChannel);
-    socket.off('removeChannel', handleRemoveChannel);
-  };
-}, [dispatch, isAuthenticated, channels]);
+    const handleRemoveChannel = (channelId) => {
+      dispatch(removeChannel(channelId));
+    };
+
+    socket.on('newMessage', handleNewMessage);
+    socket.on('newChannel', handleNewChannel);
+    socket.on('renameChannel', handleRenameChannel);
+    socket.on('removeChannel', handleRemoveChannel);
+
+    return () => {
+      socket.off('newMessage', handleNewMessage);
+      socket.off('newChannel', handleNewChannel);
+      socket.off('renameChannel', handleRenameChannel);
+      socket.off('removeChannel', handleRemoveChannel);
+    };
+  }, [dispatch, isAuthenticated]);
 
   if (!isAuthenticated) {
     return (
