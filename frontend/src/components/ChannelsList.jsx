@@ -87,6 +87,7 @@ const ChannelsList = ({ channels, currentChannelId }) => {
         {channels.map((channel) => (
           <div key={channel.id} className="position-relative">
             <ListGroup.Item
+              as="div"
               action
               active={channel.id === currentChannelId}
               onClick={() => handleChannelSelect(channel.id)}
