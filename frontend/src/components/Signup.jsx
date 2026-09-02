@@ -68,7 +68,9 @@ const Signup = () => {
             
             <Form onSubmit={formik.handleSubmit} noValidate>
               <Form.Group className="mb-3">
-                <Form.Label htmlFor="username" className="fw-semibold">{t('auth.username')}</Form.Label>
+                <Form.Label htmlFor="username" className="fw-semibold">
+                  {t('auth.username')}
+                </Form.Label>
                 <Form.Control
                   id="username"
                   ref={inputRef}
@@ -92,7 +94,9 @@ const Signup = () => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label htmlFor="password" className="fw-semibold">{t('auth.password')}</Form.Label>
+                <Form.Label htmlFor="password" className="fw-semibold">
+                  {t('auth.password')}
+                </Form.Label>
                 <Form.Control
                   id="password"
                   type="password"
@@ -112,7 +116,9 @@ const Signup = () => {
               </Form.Group>
 
               <Form.Group className="mb-4">
-                <Form.Label htmlFor="confirmPassword" className="fw-semibold">{t('auth.confirmPassword')}</Form.Label>
+                <Form.Label htmlFor="confirmPassword" className="fw-semibold">
+                  {t('auth.confirmPassword')}
+                </Form.Label>
                 <Form.Control
                   id="confirmPassword"
                   type="password"
