@@ -15,16 +15,17 @@ const Login = () => {
   const { isLoading, error, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-
-  useEffect(() => {
+    dispatch(clearError());
     return () => {
       dispatch(clearError());
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
     dispatch(clearError());
