@@ -147,7 +147,10 @@ const channelsSlice = createSlice({
       })
       .addCase(createChannel.fulfilled, (state, action) => {
         state.isCreating = false;
-        state.items.push(action.payload);
+        const exists = state.items.some(ch => ch.id === action.payload.id);
+        if (!exists) {
+          state.items.push(action.payload);
+        }
         state.currentChannelId = action.payload.id;
       })
       .addCase(createChannel.rejected, (state, action) => {

@@ -88,6 +88,8 @@ const ChannelsList = ({ channels, currentChannelId }) => {
           <div key={channel.id} className="position-relative">
             <ListGroup.Item
               as="div"
+              role="button"
+              tabIndex={0} 
               action
               active={channel.id === currentChannelId}
               onClick={() => handleChannelSelect(channel.id)}
