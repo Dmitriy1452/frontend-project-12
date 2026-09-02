@@ -26,6 +26,10 @@ export const initializeSocket = (token) => {
     timeout: 10000,
   });
 
+  socketInstance.onAny((event, ...args) => {
+    console.log(`📡 Событие получено: ${event}`, JSON.stringify(args));
+  });
+  
   socketInstance.on('connect', () => {
     isConnecting = false;
     connectionAttempts = 0;
