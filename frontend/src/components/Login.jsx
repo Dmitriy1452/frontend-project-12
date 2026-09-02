@@ -124,6 +124,7 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="auth-btn mb-3"
+                aria-label={t('auth.loginButton')}
                 disabled={isLoading || formik.isSubmitting || !formik.values.username || !formik.values.password}
               >
                 {(isLoading || formik.isSubmitting) ? (

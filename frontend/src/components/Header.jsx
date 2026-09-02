@@ -47,6 +47,7 @@ const Header = () => {
                 size="sm"
                 className="px-3"
                 aria-label={t('app.login')}
+                aria-label="Перейти на страницу входа"
               >
                 {t('app.login')}
               </Button>
@@ -57,6 +58,7 @@ const Header = () => {
                 size="sm"
                 className="px-3"
                 aria-label={t('app.signup')}
+                aria-label="Перейти на страницу регистрации"
               >
                 {t('app.signup')}
               </Button>
