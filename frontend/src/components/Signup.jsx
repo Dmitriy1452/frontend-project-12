@@ -97,6 +97,9 @@ const Signup = () => {
                   type="password"
                   name="password"
                   placeholder={t('auth.passwordPlaceholder')}
+                  aria-label={t('auth.username')}
+                  aria-label={t('auth.password')}
+                  aria-label={t('auth.confirmPassword')}
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}

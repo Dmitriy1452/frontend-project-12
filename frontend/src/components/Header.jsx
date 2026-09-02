@@ -46,6 +46,7 @@ const Header = () => {
                 variant="outline-primary" 
                 size="sm"
                 className="px-3"
+                aria-label={t('app.login')}
               >
                 {t('app.login')}
               </Button>
@@ -55,6 +56,7 @@ const Header = () => {
                 variant="primary" 
                 size="sm"
                 className="px-3"
+                aria-label={t('app.signup')}
               >
                 {t('app.signup')}
               </Button>
