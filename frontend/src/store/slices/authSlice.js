@@ -131,6 +131,7 @@ const authSlice = createSlice({
         state.isAuthenticated = !!action.payload.token;
         state.token = action.payload.token;
         state.username = action.payload.username;
+        state.error = null;
       });
   },
 });
