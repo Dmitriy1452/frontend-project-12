@@ -75,6 +75,7 @@ const Signup = () => {
                   type="text"
                   name="username"
                   placeholder={t('auth.usernamePlaceholder')}
+                  aria-label={t('auth.username')}
                   value={formik.values.username}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -97,9 +98,7 @@ const Signup = () => {
                   type="password"
                   name="password"
                   placeholder={t('auth.passwordPlaceholder')}
-                  aria-label={t('auth.username')}
                   aria-label={t('auth.password')}
-                  aria-label={t('auth.confirmPassword')}
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -119,6 +118,7 @@ const Signup = () => {
                   type="password"
                   name="confirmPassword"
                   placeholder={t('auth.confirmPasswordPlaceholder')}
+                  aria-label={t('auth.confirmPassword')}
                   value={formik.values.confirmPassword}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}

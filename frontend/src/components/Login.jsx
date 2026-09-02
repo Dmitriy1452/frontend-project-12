@@ -92,7 +92,6 @@ const Login = () => {
                   type="text"
                   placeholder={t('auth.usernamePlaceholder')}
                   aria-label={t('auth.username')}
-                  aria-label={t('auth.password')}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.username}
@@ -112,6 +111,7 @@ const Login = () => {
                   name="password"
                   type="password"
                   placeholder={t('auth.passwordPlaceholder')}
+                  aria-label={t('auth.password')}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.password}
