@@ -101,7 +101,7 @@ const ChannelsList = ({ channels, currentChannelId }) => {
                 cursor: 'pointer',
               }}
             >
-              <span>{t('channels.channelPrefix')} {channel.name}</span>
+              # {channel.name}
               
               {isRemovable(channel) && (
                 <OverlayTrigger

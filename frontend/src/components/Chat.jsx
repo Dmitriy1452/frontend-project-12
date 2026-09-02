@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { getSocket } from '../socket/socket';
-import { fetchChannels } from '../store/slices/channelsSlice';
+import { 
+  fetchChannels,
+  addChannel,
+  removeChannel,
+  renameChannel
+} from '../store/slices/channelsSlice';
 import { fetchMessages, addMessage } from '../store/slices/messagesSlice';
 import ChannelsList from './ChannelsList';
 import MessageList from './MessageList';
