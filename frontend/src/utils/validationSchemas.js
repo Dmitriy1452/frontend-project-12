@@ -18,15 +18,15 @@ export const signupValidationSchema = Yup.object({
 });
 
 export const createChannelValidationSchema = (existingChannels = []) => {
+  const channelNames = existingChannels.map(ch => ch.name);
+  
   return Yup.object({
     name: Yup.string()
-      .min(3, t('channels.channelNameMin'))
-      .max(20, t('channels.channelNameMax'))
-      .matches(/^[a-zA-Z0-9а-яА-Я_\s-]+$/, t('channels.channelNameInvalid'))
-      .notOneOf(
-        existingChannels.map(ch => ch.name),
-        t('channels.channelExists')
-      )
-      .required(t('channels.channelNameRequired')),
+      .min(3, 'От 3 до 20 символов')
+      .max(20, 'От 3 до 20 символов')
+      .matches(/^[a-zA-Z0-9а-яА-Я_\s-]+$/, 'Разрешены только буквы, цифры, _ и -')
+      .notOneOf(channelNames, 'Канал с таким именем уже существует')
+      .required('Имя канала обязательно')
+      .trim(),
   });
 };

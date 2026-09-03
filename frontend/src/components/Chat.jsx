@@ -50,7 +50,6 @@ const Chat = () => {
     try {
       socket = getSocket();
     } catch (e) {
-      console.warn('Socket not ready');
       return;
     }
 

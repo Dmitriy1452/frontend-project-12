@@ -13,14 +13,11 @@ const Home = () => {
 
   useEffect(() => {
     if (isAuthenticated && token && !socketInitialized) {
-      const timeoutId = setTimeout(() => {
+      try {
         initializeSocket(token);
         setSocketInitialized(true);
-      }, 500);
-      
-      return () => {
-        clearTimeout(timeoutId);
-      };
+      } catch (error) {
+      }
     }
     
     return () => {

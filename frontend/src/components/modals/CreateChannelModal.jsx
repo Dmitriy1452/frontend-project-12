@@ -23,20 +23,30 @@ const CreateChannelModal = ({ show, onHide }) => {
 
   const validationSchema = createChannelValidationSchema(channels);
 
-  const handleSubmit = async (values, { resetForm, setFieldValue, setSubmitting }) => {
+  const handleSubmit = async (values, { resetForm, setFieldValue, setSubmitting, setErrors }) => {
     try {
       const filteredName = filterProfanity(values.name);
       
       if (filteredName !== values.name) {
         showWarning(t('toasts.profanityDetected'));
+        setFieldValue('name', filteredName);
+        if (!filteredName.trim()) {
+          setErrors({ name: 'Имя канала не может быть пустым' });
+          setSubmitting(false);
+          return;
+        }
+        values.name = filteredName;
       }
       
-      const result = await dispatch(createChannel({ name: filteredName })).unwrap();
+      await dispatch(createChannel({ name: filteredName })).unwrap();
       showSuccess(t('channels.createSuccess', { name: filteredName }));
       resetForm();
       onHide();
     } catch (err) {
       showError(t('channels.createError'));
+      if (typeof err === 'string') {
+        setErrors({ name: err });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -54,7 +64,7 @@ const CreateChannelModal = ({ show, onHide }) => {
         validateOnChange={true}
         validateOnBlur={true}
       >
-        {({ handleSubmit, isSubmitting, values, errors, touched, isValid, setFieldValue }) => (
+        {({ handleSubmit, isSubmitting, values, errors, touched, setFieldValue }) => (
           <FormikForm onSubmit={handleSubmit}>
             <Modal.Body>
               {error && (

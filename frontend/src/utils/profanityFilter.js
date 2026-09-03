@@ -1,14 +1,20 @@
 import filter from 'leo-profanity';
 
-if (!filter) {
-  console.warn('Profanity filter not loaded');
+try {
+  filter.loadDictionary('en');
+  filter.loadDictionary('ru');
+} catch (error) {
 }
 
+const badWords = [
+  'boobs', 'boob', 'tits', 'tit', 'dick', 'pussy', 'fuck', 'shit', 
+  'ass', 'bitch', 'cunt', 'cock', 'suck', 'whore', 'slut', 'bastard',
+  'хуй', 'пизда', 'блядь', 'ебан', 'мудак', 'говно', 'залупа', 'петух'
+];
+
 try {
-  filter.loadDictionary('ru');
-  filter.add(['boobs', 'boob', 'tits', 'tit', 'dick', 'pussy', 'fuck', 'shit', 'ass', 'bitch']);
+  filter.add(badWords);
 } catch (error) {
-  console.warn('Failed to load Russian dictionary:', error);
 }
 
 export const hasProfanity = (text) => {
@@ -16,7 +22,6 @@ export const hasProfanity = (text) => {
   try {
     return filter.check(text);
   } catch (error) {
-    console.warn('Error checking profanity:', error);
     return false;
   }
 };
@@ -24,10 +29,13 @@ export const hasProfanity = (text) => {
 export const filterProfanity = (text) => {
   if (!text || typeof text !== 'string') return text;
   try {
-    return filter.clean(text);
+    const cleaned = filter.clean(text);
+    if (cleaned === text && hasProfanity(text)) {
+      return text.split('').map(char => /[a-zA-Zа-яА-Я]/.test(char) ? '*' : char).join('');
+    }
+    return cleaned;
   } catch (error) {
-    console.warn('Error filtering profanity:', error);
-    return text;
+    return text.split('').map(char => /[a-zA-Zа-яА-Я]/.test(char) ? '*' : char).join('');
   }
 };
 
@@ -36,16 +44,21 @@ export const validateChannelName = (name) => {
     return { isValid: false, message: 'Имя канала обязательно', filtered: '' };
   }
   
-  const hasBadWords = hasProfanity(name);
+  const trimmed = name.trim();
+  if (trimmed.length < 3 || trimmed.length > 20) {
+    return { isValid: false, message: 'От 3 до 20 символов', filtered: trimmed };
+  }
+  
+  const hasBadWords = hasProfanity(trimmed);
   if (hasBadWords) {
     return { 
       isValid: false, 
       message: 'Имя канала содержит недопустимые слова',
-      filtered: filterProfanity(name)
+      filtered: filterProfanity(trimmed)
     };
   }
   
-  return { isValid: true, message: '', filtered: name };
+  return { isValid: true, message: '', filtered: trimmed };
 };
 
 export const validateMessage = (message) => {
@@ -53,16 +66,21 @@ export const validateMessage = (message) => {
     return { isValid: false, message: 'Сообщение не может быть пустым', filtered: '' };
   }
   
-  const hasBadWords = hasProfanity(message);
+  const trimmed = message.trim();
+  if (!trimmed) {
+    return { isValid: false, message: 'Сообщение не может быть пустым', filtered: '' };
+  }
+  
+  const hasBadWords = hasProfanity(trimmed);
   if (hasBadWords) {
     return { 
       isValid: false, 
       message: 'Сообщение содержит недопустимые слова',
-      filtered: filterProfanity(message)
+      filtered: filterProfanity(trimmed)
     };
   }
   
-  return { isValid: true, message: '', filtered: message };
+  return { isValid: true, message: '', filtered: trimmed };
 };
 
 export default filter;

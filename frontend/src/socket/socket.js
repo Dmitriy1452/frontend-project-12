@@ -1,6 +1,5 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = 'http://localhost:5001';
 let socketInstance = null;
 let isConnecting = false;
 let connectionAttempts = 0;
@@ -17,7 +16,7 @@ export const initializeSocket = (token) => {
 
   isConnecting = true;
   
-  socketInstance = io(SOCKET_URL, {
+  socketInstance = io({
     auth: { token },
     transports: ['websocket', 'polling'],
     reconnection: true,
@@ -31,7 +30,7 @@ export const initializeSocket = (token) => {
     connectionAttempts = 0;
   });
 
-  socketInstance.on('connect_error', (error) => {
+  socketInstance.on('connect_error', () => {
     connectionAttempts++;
     if (connectionAttempts >= MAX_ATTEMPTS) {
       isConnecting = false;

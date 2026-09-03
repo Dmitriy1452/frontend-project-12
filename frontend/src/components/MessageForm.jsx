@@ -22,19 +22,22 @@ const MessageForm = ({ currentChannelId }) => {
     setIsFiltered(false);
 
     const trimmedMessage = message.trim();
-    if (!trimmedMessage) return;
+    if (!trimmedMessage) {
+      setError('Сообщение не может быть пустым');
+      return;
+    }
 
     const validation = validateMessage(trimmedMessage);
     
     if (!validation.isValid) {
-      if (validation.filtered) {
+      if (validation.filtered && validation.filtered !== trimmedMessage) {
         setError(t('chat.messageProfanity'));
         showWarning(t('toasts.profanityDetected'));
         setMessage(validation.filtered);
         setIsFiltered(true);
         return;
       }
-      setError(validation.message);
+      setError(validation.message || 'Некорректное сообщение');
       return;
     }
 
@@ -48,9 +51,11 @@ const MessageForm = ({ currentChannelId }) => {
       })).unwrap();
       setMessage('');
       setIsFiltered(false);
+      setError(null);
     } catch (err) {
-      setError(t('chat.sendError'));
-      showError(t('chat.sendError'));
+      const errorMsg = typeof err === 'string' ? err : t('chat.sendError');
+      setError(errorMsg);
+      showError(errorMsg);
     }
   };
 
@@ -71,7 +76,7 @@ const MessageForm = ({ currentChannelId }) => {
         </Alert>
       )}
       {isFiltered && (
-        <Alert variant="info" className="mb-2">
+        <Alert variant="info" dismissible onClose={() => setIsFiltered(false)} className="mb-2">
           Сообщение было отфильтровано от нецензурных слов
         </Alert>
       )}
