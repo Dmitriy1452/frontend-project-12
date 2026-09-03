@@ -89,7 +89,6 @@ const ChannelsList = ({ channels, currentChannelId }) => {
             alignItems: 'center',
             justifyContent: 'center'
           }}
-          aria-label="Создать канал"
         >
           +
         </Button>
