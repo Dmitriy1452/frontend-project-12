@@ -17,7 +17,7 @@ const CreateChannelModal = ({ show, onHide }) => {
 
   useEffect(() => {
     if (show && inputRef.current) {
-      setTimeout(() => inputRef.current.focus(), 100);
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [show]);
 
