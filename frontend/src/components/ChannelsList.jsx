@@ -85,49 +85,52 @@ const ChannelsList = ({ channels, currentChannelId }) => {
 
       <ListGroup variant="flush">
         {channels.map((channel) => (
-          <div 
-            key={channel.id} 
-            className="d-flex justify-content-between align-items-center px-2 py-2 border-0"
-            style={{
-              borderRadius: '8px',
-              marginBottom: '2px',
-              backgroundColor: channel.id === currentChannelId ? '#e7f3ff' : 'transparent',
-              color: channel.id === currentChannelId ? '#0d6efd' : '#212529',
-              fontWeight: channel.id === currentChannelId ? '600' : '400',
-              cursor: 'pointer',
-            }}
-            onClick={() => handleChannelSelect(channel.id)}
-          >
-            <span>{t('channels.channelPrefix')} {channel.name}</span>
-            
-            {isRemovable(channel) && (
-              <OverlayTrigger
-                trigger="click"
-                placement="bottom-end"
-                rootClose
-                overlay={renderMenuPopover(channel)}
-                show={activeMenu === channel.id}
-                onToggle={() => setActiveMenu(activeMenu === channel.id ? null : channel.id)}
-              >
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="p-0 text-secondary"
-                  style={{ textDecoration: 'none' }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveMenu(activeMenu === channel.id ? null : channel.id);
-                  }}
+          <div key={channel.id} className="position-relative">
+            <ListGroup.Item
+              action
+              active={channel.id === currentChannelId}
+              onClick={() => handleChannelSelect(channel.id)}
+              className="d-flex justify-content-between align-items-center px-2 py-2 border-0"
+              style={{
+                borderRadius: '8px',
+                marginBottom: '2px',
+                backgroundColor: channel.id === currentChannelId ? '#e7f3ff' : 'transparent',
+                color: channel.id === currentChannelId ? '#0d6efd' : '#212529',
+                fontWeight: channel.id === currentChannelId ? '600' : '400',
+                cursor: 'pointer',
+              }}
+            >
+              <span>{t('channels.channelPrefix')} {channel.name}</span>
+              
+              {isRemovable(channel) && (
+                <OverlayTrigger
+                  trigger="click"
+                  placement="bottom-end"
+                  rootClose
+                  overlay={renderMenuPopover(channel)}
+                  show={activeMenu === channel.id}
+                  onToggle={() => setActiveMenu(activeMenu === channel.id ? null : channel.id)}
                 >
-                  <span className="visually-hidden">Управление каналом</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <circle cx="8" cy="3" r="1.5" />
-                    <circle cx="8" cy="8" r="1.5" />
-                    <circle cx="8" cy="13" r="1.5" />
-                  </svg>
-                </Button>
-              </OverlayTrigger>
-            )}
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="p-0 text-secondary"
+                    style={{ textDecoration: 'none' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveMenu(activeMenu === channel.id ? null : channel.id);
+                    }}
+                  >
+                    <span className="visually-hidden">Управление каналом</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <circle cx="8" cy="3" r="1.5" />
+                      <circle cx="8" cy="8" r="1.5" />
+                      <circle cx="8" cy="13" r="1.5" />
+                    </svg>
+                  </Button>
+                </OverlayTrigger>
+              )}
+            </ListGroup.Item>
           </div>
         ))}
       </ListGroup>
