@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Row, Col, Spinner, Alert } from 'react-bootstrap';
@@ -31,6 +31,10 @@ const Chat = ({ socket: providedSocket }) => {
   } = useSelector((state) => state.messages);
 
   const channelsRef = useRef(channels);
+
+  const [socketReady, setSocketReady] = useState(
+    !providedSocket || providedSocket.connected
+  );
   
   useEffect(() => {
     channelsRef.current = channels;
@@ -42,6 +46,25 @@ const Chat = ({ socket: providedSocket }) => {
       dispatch(fetchMessages());
     }
   }, [dispatch, isAuthenticated]);
+
+  useEffect(() => {
+    if (!providedSocket) return undefined;
+
+    if (providedSocket.connected) {
+      setSocketReady(true);
+      return undefined;
+    }
+
+    const handleConnect = () => {
+      setSocketReady(true);
+    };
+
+    providedSocket.once('connect', handleConnect);
+
+    return () => {
+      providedSocket.off('connect', handleConnect);
+    };
+  }, [providedSocket]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -118,19 +141,38 @@ const Chat = ({ socket: providedSocket }) => {
     );
   }
 
-  const currentMessages = messages.filter(msg => msg.channelId === currentChannelId);
+  const currentMessages = messages.filter(
+    msg => msg.channelId === currentChannelId
+  );
 
   return (
     <Row className="m-0 h-100">
-      <Col md={3} className="bg-white border-end p-0 h-100" style={{ overflowY: 'auto' }}>
-        <ChannelsList channels={channels} currentChannelId={currentChannelId} />
+      <Col
+        md={3}
+        className="bg-white border-end p-0 h-100"
+        style={{ overflowY: 'auto' }}
+      >
+        <ChannelsList
+          channels={channels}
+          currentChannelId={currentChannelId}
+        />
       </Col>
+
       <Col md={9} className="d-flex flex-column p-0 bg-white h-100">
-        <div className="flex-grow-1 overflow-auto p-3" style={{ backgroundColor: '#ffffff' }}>
+        <div
+          className="flex-grow-1 overflow-auto p-3"
+          style={{ backgroundColor: '#ffffff' }}
+        >
           <MessageList messages={currentMessages} />
         </div>
-        <div className="p-3 border-top bg-white" style={{ flexShrink: 0 }}>
-          <MessageForm currentChannelId={currentChannelId} />
+
+        <div
+          className="p-3 border-top bg-white"
+          style={{ flexShrink: 0 }}
+        >
+          {socketReady && (
+            <MessageForm currentChannelId={currentChannelId} />
+          )}
         </div>
       </Col>
     </Row>
