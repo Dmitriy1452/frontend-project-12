@@ -74,6 +74,7 @@ const ChannelsList = ({ channels, currentChannelId }) => {
       <div className="d-flex justify-content-between align-items-center mb-3 flex-shrink-0">
         <h5 className="mb-0 fw-bold text-secondary">{t('channels.title')}</h5>
         <Button 
+          id="add-channel-btn"
           variant="primary" 
           size="sm" 
           onClick={() => setShowCreateModal(true)}
@@ -90,7 +91,7 @@ const ChannelsList = ({ channels, currentChannelId }) => {
           }}
           aria-label="Создать канал"
         >
-          <span aria-hidden="true">+</span>
+          +
         </Button>
       </div>
 
