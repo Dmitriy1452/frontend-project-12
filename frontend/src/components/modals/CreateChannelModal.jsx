@@ -72,7 +72,7 @@ const CreateChannelModal = ({ show, onHide }) => {
                   {error}
                 </Alert>
               )}
-              <Form.Group controlId="channelName">
+              <Form.Group>
                 <Form.Label htmlFor="channelNameInput">{t('channels.channelName')}</Form.Label>
                 <Field
                   innerRef={inputRef}
