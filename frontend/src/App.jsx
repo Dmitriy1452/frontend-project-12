@@ -56,3 +56,5 @@ function App({ socket }) {
     </RollbarProvider>
   );
 }
+
+export default App;
