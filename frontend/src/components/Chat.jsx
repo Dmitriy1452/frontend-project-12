@@ -7,7 +7,8 @@ import {
   fetchChannels, 
   addChannel, 
   removeChannel, 
-  renameChannel 
+  renameChannel,
+  setCurrentChannel
 } from '../store/slices/channelsSlice';
 import { fetchMessages, addMessage } from '../store/slices/messagesSlice';
 import ChannelsList from './ChannelsList';
@@ -17,7 +18,7 @@ import MessageForm from './MessageForm';
 const Chat = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, username } = useSelector((state) => state.auth);
   const { 
     items: channels, 
     currentChannelId, 

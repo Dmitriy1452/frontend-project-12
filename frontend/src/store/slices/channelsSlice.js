@@ -1,21 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { channelsAPI } from '../../api';
 
-const extractErrorMessage = (error) => {
-  if (!error) return 'Ошибка загрузки каналов';
-  
-  if (typeof error === 'string') return error;
-  
-  if (error.message) return error.message;
-  
-  if (error.data) {
-    if (typeof error.data === 'string') return error.data;
-    if (error.data.message) return error.data.message;
-  }
-  
-  return 'Ошибка загрузки каналов';
-};
-
 export const fetchChannels = createAsyncThunk(
   'channels/fetchAll',
   async (_, { rejectWithValue }) => {
@@ -102,25 +87,28 @@ const channelsSlice = createSlice({
       state.currentChannelId = null;
     },
     addChannel: (state, action) => {
-      const exists = state.items.some(ch => ch.id === action.payload.id);
+      const channel = action.payload;
+      const exists = state.items.some(ch => ch.id === channel.id);
       if (!exists) {
-        state.items.push(action.payload);
-        if (!state.currentChannelId) {
-          state.currentChannelId = action.payload.id;
+        state.items.push(channel);
+        if (state.items.length === 1 && !state.currentChannelId) {
+          state.currentChannelId = channel.id;
         }
       }
     },
     removeChannel: (state, action) => {
-      state.items = state.items.filter(ch => ch.id !== action.payload);
-      if (state.currentChannelId === action.payload) {
+      const channelId = action.payload;
+      state.items = state.items.filter(ch => ch.id !== channelId);
+      if (state.currentChannelId === channelId) {
         const defaultChannel = state.items.find(ch => ch.name === 'general') || state.items[0];
         state.currentChannelId = defaultChannel?.id || null;
       }
     },
     renameChannel: (state, action) => {
-      const index = state.items.findIndex(ch => ch.id === action.payload.id);
+      const channel = action.payload;
+      const index = state.items.findIndex(ch => ch.id === channel.id);
       if (index !== -1) {
-        state.items[index] = action.payload;
+        state.items[index] = channel;
       }
     },
   },
@@ -147,11 +135,12 @@ const channelsSlice = createSlice({
       })
       .addCase(createChannel.fulfilled, (state, action) => {
         state.isCreating = false;
-        const exists = state.items.some(ch => ch.id === action.payload.id);
+        const channel = action.payload;
+        const exists = state.items.some(ch => ch.id === channel.id);
         if (!exists) {
-          state.items.push(action.payload);
+          state.items.push(channel);
         }
-        state.currentChannelId = action.payload.id;
+        state.currentChannelId = channel.id;
       })
       .addCase(createChannel.rejected, (state, action) => {
         state.isCreating = false;
@@ -163,9 +152,10 @@ const channelsSlice = createSlice({
       })
       .addCase(updateChannel.fulfilled, (state, action) => {
         state.isUpdating = false;
-        const index = state.items.findIndex(ch => ch.id === action.payload.id);
+        const channel = action.payload;
+        const index = state.items.findIndex(ch => ch.id === channel.id);
         if (index !== -1) {
-          state.items[index] = action.payload;
+          state.items[index] = channel;
         }
       })
       .addCase(updateChannel.rejected, (state, action) => {
@@ -178,8 +168,9 @@ const channelsSlice = createSlice({
       })
       .addCase(deleteChannel.fulfilled, (state, action) => {
         state.isDeleting = false;
-        state.items = state.items.filter(ch => ch.id !== action.payload);
-        if (state.currentChannelId === action.payload) {
+        const channelId = action.payload;
+        state.items = state.items.filter(ch => ch.id !== channelId);
+        if (state.currentChannelId === channelId) {
           const defaultChannel = state.items.find(ch => ch.name === 'general') || state.items[0];
           state.currentChannelId = defaultChannel?.id || null;
         }
