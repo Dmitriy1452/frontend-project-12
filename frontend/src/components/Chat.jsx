@@ -7,8 +7,7 @@ import {
   fetchChannels, 
   addChannel, 
   removeChannel, 
-  renameChannel,
-  setCurrentChannel
+  renameChannel
 } from '../store/slices/channelsSlice';
 import { fetchMessages, addMessage } from '../store/slices/messagesSlice';
 import ChannelsList from './ChannelsList';
@@ -18,7 +17,7 @@ import MessageForm from './MessageForm';
 const Chat = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { isAuthenticated, username } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const { 
     items: channels, 
     currentChannelId, 
@@ -88,7 +87,7 @@ const Chat = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '70vh' }}>
+      <div className="d-flex justify-content-center align-items-center h-100">
         <Alert variant="info">
           Пожалуйста, войдите в систему, чтобы увидеть чат.
         </Alert>
@@ -98,7 +97,7 @@ const Chat = () => {
 
   if (channelsLoading || messagesLoading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '70vh' }}>
+      <div className="d-flex justify-content-center align-items-center h-100">
         <Spinner animation="border" variant="primary" />
       </div>
     );
@@ -112,7 +111,7 @@ const Chat = () => {
         : 'Ошибка загрузки данных';
     
     return (
-      <Alert variant="danger" className="m-3">
+      <Alert variant="danger" className="m-3 w-100">
         <h5>Ошибка загрузки данных</h5>
         <p>{errorText}</p>
       </Alert>
@@ -122,15 +121,15 @@ const Chat = () => {
   const currentMessages = messages.filter(msg => msg.channelId === currentChannelId);
 
   return (
-    <Row className="flex-grow-1 m-0" style={{ height: 'calc(100vh - 60px)' }}>
-      <Col md={3} className="bg-white border-end p-0" style={{ height: '100%', overflowY: 'auto' }}>
+    <Row className="m-0 h-100">
+      <Col md={3} className="bg-white border-end p-0 h-100" style={{ overflowY: 'auto' }}>
         <ChannelsList channels={channels} currentChannelId={currentChannelId} />
       </Col>
-      <Col md={9} className="d-flex flex-column p-0 bg-white" style={{ height: '100%' }}>
-        <div className="flex-grow-1 overflow-auto p-3" style={{ height: 'calc(100% - 80px)', backgroundColor: '#ffffff' }}>
+      <Col md={9} className="d-flex flex-column p-0 bg-white h-100">
+        <div className="flex-grow-1 overflow-auto p-3" style={{ backgroundColor: '#ffffff' }}>
           <MessageList messages={currentMessages} />
         </div>
-        <div className="p-3 border-top bg-white" style={{ height: '80px' }}>
+        <div className="p-3 border-top bg-white" style={{ flexShrink: 0 }}>
           <MessageForm currentChannelId={currentChannelId} />
         </div>
       </Col>

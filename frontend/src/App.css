@@ -208,3 +208,12 @@ body {
   background-color: white !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
+.chat-fix {
+  height: calc(100vh - 60px) !important;
+  overflow: hidden !important;
+}
+
+.chat-fix .row {
+  height: 100% !important;
+}

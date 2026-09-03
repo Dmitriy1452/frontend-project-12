@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { ListGroup, Button, OverlayTrigger, Popover } from 'react-bootstrap';
@@ -19,7 +19,7 @@ const ChannelsList = ({ channels, currentChannelId }) => {
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (error) {
       showError(error);
     }
@@ -43,7 +43,7 @@ const ChannelsList = ({ channels, currentChannelId }) => {
   };
 
   const isRemovable = (channel) => {
-    return channel.removable !== false;
+    return channel.removable !== false && channel.name !== 'general';
   };
 
   const renderMenuPopover = (channel) => (
@@ -78,61 +78,70 @@ const ChannelsList = ({ channels, currentChannelId }) => {
           size="sm" 
           onClick={() => setShowCreateModal(true)}
           style={{ borderRadius: '50%', width: '32px', height: '32px', padding: '0', fontSize: '18px', lineHeight: '1' }}
+          aria-label="Создать канал"
         >
           +
         </Button>
       </div>
 
       <ListGroup variant="flush">
-        {channels.map((channel) => (
-          <div key={channel.id} className="position-relative">
-            <ListGroup.Item
-              action
-              active={channel.id === currentChannelId}
-              onClick={() => handleChannelSelect(channel.id)}
-              className="d-flex justify-content-between align-items-center px-2 py-2 border-0"
-              style={{
-                borderRadius: '8px',
-                marginBottom: '2px',
-                backgroundColor: channel.id === currentChannelId ? '#e7f3ff' : 'transparent',
-                color: channel.id === currentChannelId ? '#0d6efd' : '#212529',
-                fontWeight: channel.id === currentChannelId ? '600' : '400',
-                cursor: 'pointer',
-              }}
-            >
-              <span>{t('channels.channelPrefix')} {channel.name}</span>
-              
-              {isRemovable(channel) && (
-                <OverlayTrigger
-                  trigger="click"
-                  placement="bottom-end"
-                  rootClose
-                  overlay={renderMenuPopover(channel)}
-                  show={activeMenu === channel.id}
-                  onToggle={() => setActiveMenu(activeMenu === channel.id ? null : channel.id)}
-                >
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="p-0 text-secondary"
-                    style={{ textDecoration: 'none' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveMenu(activeMenu === channel.id ? null : channel.id);
-                    }}
+        {channels && channels.length > 0 ? (
+          channels.map((channel) => (
+            <div key={channel.id} className="position-relative">
+              <ListGroup.Item
+                action
+                active={channel.id === currentChannelId}
+                onClick={() => handleChannelSelect(channel.id)}
+                className="d-flex justify-content-between align-items-center px-2 py-2 border-0"
+                style={{
+                  borderRadius: '8px',
+                  marginBottom: '2px',
+                  backgroundColor: channel.id === currentChannelId ? '#e7f3ff' : 'transparent',
+                  color: channel.id === currentChannelId ? '#0d6efd' : '#212529',
+                  fontWeight: channel.id === currentChannelId ? '600' : '400',
+                  cursor: 'pointer',
+                }}
+                role="button"
+                aria-label={`# ${channel.name}`}
+              >
+                <span>{t('channels.channelPrefix')} {channel.name}</span>
+                
+                {isRemovable(channel) && (
+                  <OverlayTrigger
+                    trigger="click"
+                    placement="bottom-end"
+                    rootClose
+                    overlay={renderMenuPopover(channel)}
+                    show={activeMenu === channel.id}
+                    onToggle={() => setActiveMenu(activeMenu === channel.id ? null : channel.id)}
                   >
-                    <span className="visually-hidden">Управление каналом</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <circle cx="8" cy="3" r="1.5" />
-                      <circle cx="8" cy="8" r="1.5" />
-                      <circle cx="8" cy="13" r="1.5" />
-                    </svg>
-                  </Button>
-                </OverlayTrigger>
-              )}
-            </ListGroup.Item>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="p-0 text-secondary"
+                      style={{ textDecoration: 'none' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveMenu(activeMenu === channel.id ? null : channel.id);
+                      }}
+                      aria-label="Управление каналом"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <circle cx="8" cy="3" r="1.5" />
+                        <circle cx="8" cy="8" r="1.5" />
+                        <circle cx="8" cy="13" r="1.5" />
+                      </svg>
+                    </Button>
+                  </OverlayTrigger>
+                )}
+              </ListGroup.Item>
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-muted py-3">
+            Нет каналов
           </div>
-        ))}
+        )}
       </ListGroup>
 
       <CreateChannelModal 

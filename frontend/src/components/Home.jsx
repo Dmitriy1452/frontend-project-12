@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { initializeSocket, disconnectSocket } from '../socket/socket';
 import Chat from './Chat';
 import ErrorBoundary from './ErrorBoundary';
@@ -33,7 +33,7 @@ const Home = () => {
   }
 
   return (
-    <Container fluid className="vh-100 d-flex flex-column p-0">
+    <Container fluid className="p-0 chat-fix">
       <ErrorBoundary>
         <Chat />
       </ErrorBoundary>
