@@ -51,14 +51,16 @@ const ChannelsList = ({ channels, currentChannelId }) => {
       <Popover.Body className="p-0">
         <ListGroup variant="flush">
           <ListGroup.Item 
-            action 
+            action
+            role="menuitem"
             onClick={() => handleRenameClick(channel)}
             className="border-0"
           >
             Переименовать
           </ListGroup.Item>
           <ListGroup.Item 
-            action 
+            action
+            role="menuitem"
             onClick={() => handleDeleteClick(channel)}
             className="border-0 text-danger"
           >
