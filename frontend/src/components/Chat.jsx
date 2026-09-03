@@ -14,7 +14,7 @@ import ChannelsList from './ChannelsList';
 import MessageList from './MessageList';
 import MessageForm from './MessageForm';
 
-const Chat = () => {
+const Chat = ({ socket: providedSocket }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -48,7 +48,7 @@ const Chat = () => {
 
     let socket;
     try {
-      socket = getSocket();
+      socket = providedSocket || getSocket();
     } catch (e) {
       return;
     }
@@ -83,7 +83,7 @@ const Chat = () => {
       socket.off('renameChannel', handleRenameChannel);
       socket.off('removeChannel', handleRemoveChannel);
     };
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, isAuthenticated, providedSocket]);
 
   if (!isAuthenticated) {
     return (

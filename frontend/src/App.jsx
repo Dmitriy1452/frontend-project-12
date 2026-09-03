@@ -14,7 +14,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { checkAuth } from './store/slices/authSlice';
 import './App.css';
 
-function App() {
+function App({ socket }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -29,13 +29,13 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route 
-              path="/" 
+            <Route
+              path="/"
               element={
                 <ProtectedRoute>
-                  <Home />
+                  <Home socket={socket} />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -56,5 +56,3 @@ function App() {
     </RollbarProvider>
   );
 }
-
-export default App;

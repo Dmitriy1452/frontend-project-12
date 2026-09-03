@@ -13,7 +13,7 @@ const init = async (socket) => {
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
         <BrowserRouter>
-          <App />
+          <App socket={socket} />
         </BrowserRouter>
       </I18nextProvider>
     </Provider>
