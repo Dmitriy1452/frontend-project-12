@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { getSocket } from '../socket/socket';
-import { 
-  fetchChannels, 
-  addChannel, 
-  removeChannel, 
+import {
+  fetchChannels,
+  addChannel,
+  removeChannel,
   renameChannel
 } from '../store/slices/channelsSlice';
 import { fetchMessages, addMessage } from '../store/slices/messagesSlice';
@@ -17,21 +17,27 @@ import MessageForm from './MessageForm';
 const Chat = ({ socket: providedSocket }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const { 
-    items: channels, 
-    currentChannelId, 
-    isLoading: channelsLoading, 
-    error: channelsError 
+
+  const {
+    items: channels,
+    currentChannelId,
+    isLoading: channelsLoading,
+    error: channelsError
   } = useSelector((state) => state.channels);
-  const { 
-    items: messages, 
-    isLoading: messagesLoading, 
-    error: messagesError 
+
+  const {
+    items: messages,
+    isLoading: messagesLoading,
+    error: messagesError
   } = useSelector((state) => state.messages);
 
   const channelsRef = useRef(channels);
-  
+  const [socketConnected, setSocketConnected] = useState(
+    providedSocket?.connected ?? false
+  );
+
   useEffect(() => {
     channelsRef.current = channels;
   }, [channels]);
@@ -44,46 +50,62 @@ const Chat = ({ socket: providedSocket }) => {
   }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
-  let socket;
+    let socket;
 
-  try {
-    socket = providedSocket || getSocket();
-  } catch (e) {
-    return undefined;
-  }
-
-  const handleNewMessage = (message) => {
-    dispatch(addMessage(message));
-  };
-
-  const handleNewChannel = (channel) => {
-    const exists = channelsRef.current.some(ch => ch.id === channel.id);
-
-    if (!exists) {
-      dispatch(addChannel(channel));
+    try {
+      socket = providedSocket || getSocket();
+    } catch (e) {
+      return undefined;
     }
-  };
 
-  const handleRenameChannel = (channel) => {
-    dispatch(renameChannel(channel));
-  };
+    const handleConnect = () => {
+      setSocketConnected(true);
+    };
 
-  const handleRemoveChannel = (channelId) => {
-    dispatch(removeChannel(channelId));
-  };
+    const handleDisconnect = () => {
+      setSocketConnected(false);
+    };
 
-  socket.on('newMessage', handleNewMessage);
-  socket.on('newChannel', handleNewChannel);
-  socket.on('renameChannel', handleRenameChannel);
-  socket.on('removeChannel', handleRemoveChannel);
+    const handleNewMessage = (message) => {
+      dispatch(addMessage(message));
+    };
 
-  return () => {
-    socket.off('newMessage', handleNewMessage);
-    socket.off('newChannel', handleNewChannel);
-    socket.off('renameChannel', handleRenameChannel);
-    socket.off('removeChannel', handleRemoveChannel);
-  };
-}, [dispatch, providedSocket]);
+    const handleNewChannel = (channel) => {
+      const exists = channelsRef.current.some(
+        (ch) => ch.id === channel.id
+      );
+
+      if (!exists) {
+        dispatch(addChannel(channel));
+      }
+    };
+
+    const handleRenameChannel = (channel) => {
+      dispatch(renameChannel(channel));
+    };
+
+    const handleRemoveChannel = (channelId) => {
+      dispatch(removeChannel(channelId));
+    };
+
+    setSocketConnected(socket.connected);
+
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+    socket.on('newMessage', handleNewMessage);
+    socket.on('newChannel', handleNewChannel);
+    socket.on('renameChannel', handleRenameChannel);
+    socket.on('removeChannel', handleRemoveChannel);
+
+    return () => {
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
+      socket.off('newMessage', handleNewMessage);
+      socket.off('newChannel', handleNewChannel);
+      socket.off('renameChannel', handleRenameChannel);
+      socket.off('removeChannel', handleRemoveChannel);
+    };
+  }, [dispatch, providedSocket]);
 
   if (!isAuthenticated) {
     return (
@@ -104,12 +126,13 @@ const Chat = ({ socket: providedSocket }) => {
   }
 
   if (channelsError || messagesError) {
-    const errorText = typeof channelsError === 'string' 
-      ? channelsError 
-      : typeof messagesError === 'string'
-        ? messagesError
-        : 'Ошибка загрузки данных';
-    
+    const errorText =
+      typeof channelsError === 'string'
+        ? channelsError
+        : typeof messagesError === 'string'
+          ? messagesError
+          : 'Ошибка загрузки данных';
+
     return (
       <Alert variant="danger" className="m-3 w-100">
         <h5>Ошибка загрузки данных</h5>
@@ -119,7 +142,7 @@ const Chat = ({ socket: providedSocket }) => {
   }
 
   const currentMessages = messages.filter(
-    msg => msg.channelId === currentChannelId
+    (msg) => msg.channelId === currentChannelId
   );
 
   return (
@@ -135,7 +158,10 @@ const Chat = ({ socket: providedSocket }) => {
         />
       </Col>
 
-      <Col md={9} className="d-flex flex-column p-0 bg-white h-100">
+      <Col
+        md={9}
+        className="d-flex flex-column p-0 bg-white h-100"
+      >
         <div
           className="flex-grow-1 overflow-auto p-3"
           style={{ backgroundColor: '#ffffff' }}
@@ -147,7 +173,13 @@ const Chat = ({ socket: providedSocket }) => {
           className="p-3 border-top bg-white"
           style={{ flexShrink: 0 }}
         >
-          <MessageForm currentChannelId={currentChannelId} />
+          {socketConnected ? (
+            <MessageForm currentChannelId={currentChannelId} />
+          ) : (
+            <div className="d-flex justify-content-center">
+              <Spinner animation="border" size="sm" />
+            </div>
+          )}
         </div>
       </Col>
     </Row>
