@@ -3,7 +3,7 @@ import i18n from '../i18n/index.js';
 
 const t = (key) => i18n.t(key);
 
-export const signupValidationSchema = Yup.object({
+export const signupValidationSchema = () => Yup.object({
   username: Yup.string()
     .min(3, t('errors.usernameMin'))
     .max(20, t('errors.usernameMax'))

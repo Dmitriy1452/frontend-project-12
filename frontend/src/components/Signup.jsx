@@ -55,7 +55,7 @@ const Signup = () => {
       password: '',
       confirmPassword: '',
     },
-    validationSchema: signupValidationSchema,
+    validationSchema: signupValidationSchema(),
     onSubmit: handleSubmit,
   });
 
